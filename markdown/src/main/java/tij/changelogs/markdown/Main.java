@@ -4,6 +4,7 @@ import org.w3c.dom.Node;
 import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigConstants;
 import tij.changelogs.config.ConfigSystem;
+import tij.changelogs.markdown.builder.MarkdownBuilder;
 import tij.changelogs.markdown.parser.ChangelogParser;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,6 +49,67 @@ public class Main {
 
         var list = ChangelogParser.parse(cumulatedFile, config);
         System.out.println(list);
+
+        File markdownFile = ensureMarkdownSibling(cumulatedFile);
+
+        try {
+            Files.writeString(markdownFile.getAbsoluteFile().toPath(), MarkdownBuilder.build(list, config));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        publishChangelog(markdownFile);
+    }
+
+    private static void publishChangelog(File markdownFile) {
+        try {
+            Path source = markdownFile.toPath();
+
+            Path parentDir = source.getParent();
+            if (parentDir == null) {
+                throw new IllegalStateException("Markdown file has no parent directory");
+            }
+
+            Path target = parentDir
+                    .getParent()
+                    .resolve("CHANGELOG.md");
+
+            Files.copy(
+                    source,
+                    target,
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Could not publish CHANGELOG.md",
+                    e
+            );
+        }
+    }
+
+    private static File ensureMarkdownSibling(File xmlFile) {
+        String name = xmlFile.getName();
+
+        if (!name.endsWith(".xml")) {
+            throw new IllegalArgumentException("Not an xml file: " + name);
+        }
+
+        String base = name.substring(0, name.length() - 4);
+        File mdFile = new File(xmlFile.getParentFile(), base + ".md");
+
+        try {
+            if (!mdFile.exists()) {
+                Files.createFile(mdFile.toPath());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Could not create markdown file: " + mdFile.getAbsolutePath(),
+                    e
+            );
+        }
+
+        return mdFile;
     }
 
     private static File renameFileToReleaseVersion(File file, String version) {
