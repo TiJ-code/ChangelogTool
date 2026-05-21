@@ -1,17 +1,45 @@
 package tij.changelogs.archive;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
+import tij.changelogs.config.ConfigConstants;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
+import java.io.File;
+import java.nio.file.Files;
+
+public class Main {
+
+    static void main() {
+        try {
+            File dir = ConfigConstants.CUMULATED_DIR;
+            File[] files = dir.listFiles();
+
+            if (files == null || files.length == 0)
+                throw new IllegalStateException("No cumulated files");
+
+            File xml = null, md = null;
+
+            for (File f : files) {
+                if (f.getName().endsWith(".xml")) xml = f;
+                if (f.getName().endsWith(".md")) md = f;
+            }
+
+            if (xml == null || md == null)
+                throw new IllegalStateException("Missing xml or md");
+
+            String base = strip(xml.getName());
+
+            File outDir = new File(ConfigConstants.ARCHIVE_DIR, base);
+            if (!outDir.exists()) outDir.mkdirs();
+
+            Files.move(xml.toPath(), new File(outDir, xml.getName()).toPath());
+            Files.move(md.toPath(), new File(outDir, md.getName()).toPath());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    static String strip(String n) {
+        int i = n.lastIndexOf('.');
+        return i == -1 ? n : n.substring(0, i);
     }
 }
