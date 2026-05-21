@@ -4,6 +4,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import tij.changelogs.patches.config.ReducedConfig;
 import tij.changelogs.xmlModel.XmlBreaking;
 import tij.changelogs.xmlModel.XmlCategory;
@@ -12,6 +14,7 @@ import tij.changelogs.xmlModel.XmlTopic;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -29,6 +32,8 @@ public class PatchParserV1 {
 
             var builder = factory.newDocumentBuilder();
 
+            builder.setEntityResolver(createResolver());
+
             Document doc = builder.parse(is);
 
             if (!doc.getDocumentElement().getTagName().equals(TAG_PATCH))
@@ -40,10 +45,8 @@ public class PatchParserV1 {
 
             return topics;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return List.of();
     }
 
     private static void parseTopics(Document doc, List<XmlTopic> topics, ReducedConfig config) {
@@ -161,5 +164,33 @@ public class PatchParserV1 {
         }
 
         return entries;
+    }
+
+    private static EntityResolver createResolver() {
+        return (_, systemId) -> {
+
+            if (systemId == null) {
+                return null;
+            }
+
+            String fileName = systemId;
+
+            if (systemId.contains("/")) {
+                fileName = systemId.substring(systemId.lastIndexOf('/') + 1);
+            }
+
+            String resourcePath = "/" + fileName;
+
+            InputStream resource =
+                    PatchParserV1.class.getResourceAsStream(resourcePath);
+
+            if (resource != null) {
+                return new InputSource(resource);
+            }
+
+            throw new FileNotFoundException(
+                    "DTD not found in resources: " + resourcePath
+            );
+        };
     }
 }

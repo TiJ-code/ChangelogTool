@@ -45,7 +45,7 @@ public final class ChangelogBuilder {
                 transformer.transform(new DOMSource(doc), new StreamResult(out));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -73,10 +73,8 @@ public final class ChangelogBuilder {
 
             return doc;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     private static Element createTopic(Document doc, XmlTopic topic) {

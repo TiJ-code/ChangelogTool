@@ -112,7 +112,7 @@ public final class ConfigParser {
 
     private static EntityResolver createResolver() {
 
-        return (publicId, systemId) -> {
+        return (_, systemId) -> {
 
             if (systemId == null) {
                 return null;

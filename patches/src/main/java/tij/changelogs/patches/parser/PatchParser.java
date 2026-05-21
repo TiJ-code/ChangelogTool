@@ -85,22 +85,6 @@ public final class PatchParser {
         );
     }
 
-    private static void addMissingCategories(List<XmlCategory> target, List<XmlCategory> source) {
-        for (XmlCategory sourceCategory : source) {
-            if (target.contains(sourceCategory))
-                continue;
-            target.add(sourceCategory);
-        }
-    }
-
-    private static void addMissingBreakings(List<XmlBreaking> target, List<XmlBreaking> source) {
-        for (XmlBreaking sourceBreaking : source) {
-            if (target.contains(sourceBreaking))
-                continue;
-            target.add(sourceBreaking);
-        }
-    }
-
     private static void addMissingEntries(List<XmlEntry> target, List<XmlEntry> source) {
         for (XmlEntry sourceEntry : source) {
             if (target.contains(sourceEntry))
