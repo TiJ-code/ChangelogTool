@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<patch version="1">
+    <topic name="api">
+        <category name="additions">
+            <breaking severity="major">
+                <entry>Value1</entry>
+            </breaking>
+            <breaking severity="minor">
+                <entry>Banane</entry>
+            </breaking>
+            <entry>Value2</entry>
+        </category>
+    </topic>
+</patch>

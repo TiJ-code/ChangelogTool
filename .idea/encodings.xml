@@ -3,14 +3,19 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/archive/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/archive/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config-parser/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/config-parser/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/markdown/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/markdown/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/patches/config" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/patches/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/patches/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/versioning/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/versioning/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xml-model/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xml-model/src/main/resources" charset="UTF-8" />
   </component>
 </project>

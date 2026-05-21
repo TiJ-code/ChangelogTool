@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v1.dtd">
+<patch version="1">
+    <topic name="test">
+        <category name="additions">
+            <breaking severity="high">
+                <entry>Value1</entry>
+            </breaking>
+            <entry>Value2</entry>
+        </category>
+    </topic>
+</patch>

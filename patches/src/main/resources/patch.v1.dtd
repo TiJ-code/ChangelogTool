@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!ELEMENT patch (topic*)>
+<!ATTLIST patch version CDATA #REQUIRED>
+
+<!ELEMENT topic (category*)>
+<!ATTLIST topic name CDATA #REQUIRED>
+
+<!ELEMENT category (breaking*, entry*)>
+<!ATTLIST category name CDATA #REQUIRED>
+
+<!ELEMENT breaking (entry*)>
+<!ATTLIST breaking severity CDATA #REQUIRED>
+
+<!ELEMENT entry ANY>

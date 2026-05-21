@@ -1,8 +1,10 @@
-package tij.changelogs.patches.config;
+package tij.changelogs.config.parser;
 
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+import tij.changelogs.config.Config;
+import tij.changelogs.config.model.ConfigFileVersion;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
@@ -110,25 +112,22 @@ public final class ConfigParser {
 
     private static EntityResolver createResolver() {
 
-        return (_, systemId) -> {
+        return (publicId, systemId) -> {
 
             if (systemId == null) {
                 return null;
             }
 
-            Path sysIdPath = Path.of(systemId);
+            String fileName = systemId;
 
-            String fileName =
-                    sysIdPath
-                            .getFileName()
-                            .toString();
+            if (systemId.contains("/")) {
+                fileName = systemId.substring(systemId.lastIndexOf('/') + 1);
+            }
 
-            String resourcePath = "dtd/" + fileName;
+            String resourcePath = "/dtd/" + fileName;
 
             InputStream resource =
-                    ConfigParser.class
-                            .getClassLoader()
-                            .getResourceAsStream(resourcePath);
+                    ConfigParser.class.getResourceAsStream(resourcePath);
 
             if (resource != null) {
                 return new InputSource(resource);

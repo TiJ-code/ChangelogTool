@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE config SYSTEM "/home/tij/Development/ChangelogTool/config-parser/src/main/resources/dtd/config.v1.dtd">
+<config version="1">
+    <categories>
+        <category name="additions">added</category>
+        <category name="refactorings">refactored</category>
+        <category name="fixes">fixed</category>
+        <category name="removals">removed</category>
+    </categories>
+    <topics>
+        <entry>api</entry>
+        <entry>core</entry>
+        <entry>instructions</entry>
+    </topics>
+    <breaking.changes>
+        <entry>major</entry>
+        <entry>minor</entry>
+        <entry>trivial</entry>
+    </breaking.changes>
+</config>

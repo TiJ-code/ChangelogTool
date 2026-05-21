@@ -1,7 +1,8 @@
-package tij.changelogs.patches.config;
+package tij.changelogs.config.model;
 
 import org.w3c.dom.Document;
-import tij.changelogs.patches.config.versions.ConfigParserV1;
+import tij.changelogs.config.Config;
+import tij.changelogs.config.parser.versions.ConfigParserV1;
 
 import java.util.function.Function;
 

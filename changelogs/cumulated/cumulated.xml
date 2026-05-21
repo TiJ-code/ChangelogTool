@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<changelog>
+    <topic name="api">
+        <category name="additions">
+            <breaking severity="minor">
+                <entry>Banane</entry>
+            </breaking>
+            <breaking severity="major">
+                <entry>Value1</entry>
+                <entry>Value3</entry>
+            </breaking>
+            <entry>Value2</entry>
+            <entry>Value4</entry>
+        </category>
+    </topic>
+</changelog>
