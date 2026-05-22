@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v1.dtd">
+<patch version="1">
+    <topic name="archive">
+        <category name="additions">
+            <entry>the archiving tool</entry>
+        </category>
+    </topic>
+    <topic name="config parser">
+        <category name="additions">
+            <entry>the config parsing lib</entry>
+        </category>
+    </topic>
+    <topic name="markdown">
+        <category name="additions">
+            <entry>the Markdown builder tool</entry>
+        </category>
+    </topic>
+    <topic name="patches">
+        <category name="additions">
+            <entry>the patch parsing tool</entry>
+        </category>
+    </topic>
+    <topic name="versioning">
+        <category name="additions">
+            <entry>the versioning tool</entry>
+        </category>
+    </topic>
+    <topic name="xml-model">
+        <category name="additions">
+            <entry>the xml model lib</entry>
+        </category>
+    </topic>
+</patch>

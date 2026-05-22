@@ -8,9 +8,12 @@
         <category name="removals">removed</category>
     </categories>
     <topics>
-        <entry>api</entry>
-        <entry>core</entry>
-        <entry>instructions</entry>
+        <entry>archive</entry>
+        <entry>config parser</entry>
+        <entry>markdown</entry>
+        <entry>patches</entry>
+        <entry>versioning</entry>
+        <entry>xml-model</entry>
     </topics>
     <breaking.changes>
         <entry>major</entry>

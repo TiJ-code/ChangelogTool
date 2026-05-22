@@ -121,20 +121,18 @@ public final class ConfigParser {
             String fileName = systemId;
 
             if (systemId.contains("/")) {
-                fileName = systemId.substring(systemId.lastIndexOf('/') + 1);
+                fileName = systemId.substring(systemId.lastIndexOf('/'));
             }
 
-            String resourcePath = "/dtd/" + fileName;
-
             InputStream resource =
-                    ConfigParser.class.getResourceAsStream(resourcePath);
+                    ConfigParser.class.getResourceAsStream(fileName);
 
             if (resource != null) {
                 return new InputSource(resource);
             }
 
             throw new FileNotFoundException(
-                    "DTD not found in resources: " + resourcePath
+                    "DTD not found in resources: " + fileName
             );
         };
     }

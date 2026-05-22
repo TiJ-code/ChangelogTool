@@ -29,12 +29,15 @@ public record Version(int major, int minor, int patch, Optional<String> optional
     }
 
     public Version next(CliOptions option) {
-        return switch (option) {
-            case PATCH -> nextPatch();
-            case MINOR -> nextMinor();
-            case MAJOR -> nextMajor();
-            case SUFFIX -> withSuffix("SNAPSHOT");
-        };
+        if (optionalSuffix().isEmpty())
+            return switch (option) {
+                case PATCH -> nextPatch();
+                case MINOR -> nextMinor();
+                case MAJOR -> nextMajor();
+                case SUFFIX -> withSuffix("SNAPSHOT");
+            };
+        else
+            return withSuffix(null);
     }
 
     public Version nextMajor() {
@@ -50,7 +53,7 @@ public record Version(int major, int minor, int patch, Optional<String> optional
     }
 
     public Version withSuffix(String suffix) {
-        return new Version(major(), minor(), patch(), Optional.of(suffix));
+        return new Version(major(), minor(), patch(), Optional.ofNullable(suffix));
     }
 
     @Override
