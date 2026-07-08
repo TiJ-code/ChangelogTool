@@ -3,7 +3,7 @@
 <patch version="1">
     <topic name="versioning">
         <category name="refactorings">
-            <breaking severity="high">
+            <breaking severity="major">
                 <entry>command line arguments to be `--release`, `--stage [patch/minor/major]`, `--suffix` and `--string`</entry>
             </breaking>
         </category>
