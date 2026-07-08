@@ -1,5 +1,7 @@
 package tij.changelogs.versioning;
 
+import tij.changelogs.versioning.provider.IVersionProvider;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,27 +13,26 @@ import java.util.stream.Stream;
 public final class FileFinder {
     private FileFinder() {}
 
-    public static List<File> findPomFiles() {
+    public static List<File> findFiles(
+            List<IVersionProvider> providers
+    ) {
         try {
-            List<File> files = new LinkedList<>();
-            Path rootDir = new File(".").getCanonicalFile().toPath();
+            Path root = new File(".")
+                            .getCanonicalFile()
+                            .toPath();
 
-            try (Stream<Path> walker = Files.walk(rootDir)) {
-                List<File> collected = walker
+            try (Stream<Path> walker = Files.walk(root)) {
+                return walker
                         .filter(Files::isRegularFile)
-                        .filter(path -> path.getFileName().toString().equals("pom.xml"))
                         .map(Path::toFile)
-                        .sorted(Comparator
-                                .comparingInt((File f) -> f.getParentFile().equals(rootDir.toFile()) ? 0 : 1)
-                                .thenComparing(File::getAbsolutePath))
+                        .filter(file ->
+                                providers.stream()
+                                        .anyMatch(provider -> provider.supports(file))
+                        )
                         .toList();
-                files.addAll(collected);
             }
-
-            return files;
         } catch (Exception e) {
-            e.printStackTrace();
-            return List.of();
+            throw new RuntimeException("Failed to find version files", e);
         }
     }
 }

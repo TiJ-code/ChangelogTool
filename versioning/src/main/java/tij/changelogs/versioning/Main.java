@@ -32,7 +32,7 @@ public class Main {
             providers.add(new RegexVersionProvider(rule));
         }
 
-        List<File> files = FileFinder.findPomFiles();
+        List<File> files = FileFinder.findFiles(providers);
 
         VersionManager versionManager = new VersionManager(providers, files);
 
