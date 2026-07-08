@@ -1,12 +1,16 @@
 package tij.changelogs.versioning;
 
+import tij.changelogs.versioning.cli.CliArguments;
+import tij.changelogs.versioning.cli.CliCommand;
+import tij.changelogs.versioning.cli.CliParser;
+
 import java.io.File;
 import java.util.List;
 
 public class Main {
     static void main(String[] args) {
-        CliOptions options = CliParser.parse(args);
-        if (options == null) {
+        CliArguments arguments = CliParser.parse(args);
+        if (arguments == null) {
             System.exit(1);
         }
 
@@ -19,9 +23,19 @@ public class Main {
 
         POMParser rootParser = new POMParser(rootPom);
         String rootVerStr = rootParser.getVersionString();
-        Version rootVer = Version.fromString(rootVerStr);
+        Version current = Version.fromString(rootVerStr);
 
-        Version nextVer = rootVer.next(options);
+        if (CliCommand.STRING.equals(arguments.cmd())) {
+            System.out.println(current.displayString());
+            System.exit(0);
+        }
+
+        Version nextVer = switch (arguments.cmd()) {
+            case RELEASE -> current.release();
+            case STAGE -> current.stage(arguments.stage());
+            case SUFFIX -> current.snapshot();
+            default -> throw new IllegalStateException("Unexpected value: " + arguments.cmd());
+        };
         rootParser.setVersionString(nextVer.toString());
         pomParsers.forEach(parser -> parser.setVersionString(nextVer.toString()));
     }

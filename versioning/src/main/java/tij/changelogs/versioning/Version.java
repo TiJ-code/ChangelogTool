@@ -1,5 +1,7 @@
 package tij.changelogs.versioning;
 
+import tij.changelogs.versioning.cli.StageType;
+
 import java.util.Optional;
 
 public record Version(int major, int minor, int patch, Optional<String> optionalSuffix) {
@@ -28,32 +30,40 @@ public record Version(int major, int minor, int patch, Optional<String> optional
         return new Version(major, minor, patch, suffix);
     }
 
-    public Version next(CliOptions option) {
-        if (optionalSuffix().isEmpty())
-            return switch (option) {
-                case PATCH -> nextPatch();
-                case MINOR -> nextMinor();
-                case MAJOR -> nextMajor();
-                case SUFFIX -> withSuffix("SNAPSHOT");
-            };
-        else
-            return withSuffix(null);
+    public Version release() {
+        if (optionalSuffix.isEmpty()) {
+            throw new IllegalStateException("Cannot release a version without suffix.");
+        }
+
+        return new Version(major, minor, patch, Optional.empty());
     }
 
-    public Version nextMajor() {
-        return new Version(major() + 1, 0, 0, Optional.empty());
+    public Version snapshot() {
+        if (optionalSuffix.isPresent()) {
+            throw new IllegalStateException("Already a snapshot.");
+        }
+
+        return new Version(major, minor, patch, Optional.of("SNAPSHOT"));
     }
 
-    public Version nextMinor() {
-        return new Version(major(), minor() + 1, 0, Optional.empty());
+    public Version stage(StageType type) {
+        if(optionalSuffix.isPresent()) {
+            throw new IllegalStateException("Can only do staging for versions without suffix.");
+        }
+
+        return switch (type) {
+            case PATCH -> new Version(major, minor, patch + 1, Optional.empty());
+            case MINOR -> new Version(major, minor + 1, patch, Optional.empty());
+            case MAJOR -> new Version(major + 1, minor, patch, Optional.empty());
+        };
     }
 
-    public Version nextPatch() {
-        return new Version(major(), minor(), patch()+1, Optional.empty());
-    }
+    public String displayString() {
+        if(optionalSuffix.isPresent()) {
+            throw new IllegalStateException("Version string only available for released versions.");
+        }
 
-    public Version withSuffix(String suffix) {
-        return new Version(major(), minor(), patch(), Optional.ofNullable(suffix));
+        return "v%d.%d.%d".formatted(major, minor, patch);
     }
 
     @Override

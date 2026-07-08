@@ -82,6 +82,7 @@ jobs:
         id: version
         shell: bash
         run: |
+          ./ChangelogVersioning.tool --release
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           
           echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -110,8 +111,8 @@ jobs:
       - name: Next Dev Version Bump
         shell: bash
         run: |
-          ./ChangelogVersioning.tool ${{ inputs.next-type }}
-          ./ChangelogVersioning.tool do_suffix
+          ./ChangelogVersioning.tool --stage ${{ inputs.next-type }}
+          ./ChangelogVersioning.tool --suffix
 
       - name: Commit
         shell: bash
