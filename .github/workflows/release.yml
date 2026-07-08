@@ -54,7 +54,7 @@ jobs:
 
       - name: Release Version Bump
         shell: bash
-        run: ./ChangelogVersioning.tool --release
+        run: ./ChangelogVersioning.tool config_changelog_tool.xml --release
 
       - name: Generate Changelog Patch
         shell: bash
@@ -100,8 +100,8 @@ jobs:
       - name: Next Dev Version Bump
         shell: bash
         run: |
-          ./ChangelogVersioning.tool --stage ${{ inputs.next-type }}
-          ./ChangelogVersioning.tool --suffix
+          ./ChangelogVersioning.tool config_changelog_tool.xml --stage ${{ inputs.next-type }}
+          ./ChangelogVersioning.tool config_changelog_tool.xml --suffix
 
       - name: Commit
         shell: bash
