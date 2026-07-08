@@ -3,7 +3,7 @@
 <patch version="1">
     <topic name="config parser">
         <category name="additions">
-            <breaking severity="high">
+            <breaking severity="major">
                 <entry>VersioningConfig with rules as configurable adaption to different version files</entry>
             </breaking>
         </category>
