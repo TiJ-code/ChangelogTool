@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<changelog>
+    <topic name="versioning">
+        <category name="refactorings">
+            <entry>file finding to use new generalised provider-based rule matching for filenames</entry>
+        </category>
+        <category name="additions">
+            <breaking severity="trivial">
+                <entry>requirement for config file reference, same as patch accumulator and changelog builder</entry>
+            </breaking>
+        </category>
+    </topic>
+    <topic name="config parser">
+        <category name="additions">
+            <breaking severity="major">
+                <entry>VersioningConfig with rules as configurable adaption to different version files</entry>
+            </breaking>
+        </category>
+    </topic>
+</changelog>

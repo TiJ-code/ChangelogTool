@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE patch SYSTEM "patch.v1.dtd">
-<patch version="1">
-    <topic name="versioning">
-        <category name="refactorings">
-            <entry>file finding to use new generalised provider-based rule matching for filenames</entry>
-        </category>
-    </topic>
-</patch>
