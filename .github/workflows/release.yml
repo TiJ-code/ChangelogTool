@@ -2,16 +2,6 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      bump_type:
-        description: Level of bump type
-        type: choice
-        required: true
-        default: patch
-        options:
-          - patch
-          - minor
-          - major
-
       next-type:
         description: Next version
         type: choice
@@ -64,7 +54,7 @@ jobs:
 
       - name: Release Version Bump
         shell: bash
-        run: ./ChangelogVersioning.tool ${{ inputs.bump_type }}
+        run: ./ChangelogVersioning.tool --release
 
       - name: Generate Changelog Patch
         shell: bash
@@ -82,7 +72,6 @@ jobs:
         id: version
         shell: bash
         run: |
-          ./ChangelogVersioning.tool --release
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           
           echo "version=$VERSION" >> $GITHUB_OUTPUT
