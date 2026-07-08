@@ -1,10 +1,16 @@
 package tij.changelogs.versioning;
 
+import tij.changelogs.config.Config;
+import tij.changelogs.config.ConfigSystem;
+import tij.changelogs.config.model.VersioningRule;
 import tij.changelogs.versioning.cli.CliArguments;
 import tij.changelogs.versioning.cli.CliCommand;
 import tij.changelogs.versioning.cli.CliParser;
+import tij.changelogs.versioning.provider.IVersionProvider;
+import tij.changelogs.versioning.provider.RegexVersionProvider;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -14,16 +20,23 @@ public class Main {
             System.exit(1);
         }
 
-        List<File> poms = FileFinder.findPomFiles();
+        if (arguments.configFilePath() == null) {
+            System.exit(1);
+        }
 
-        File rootPom = poms.getFirst();
-        poms.removeFirst();
+        Config config = ConfigSystem.load(arguments.configFilePath());
 
-        List<POMParser> pomParsers = poms.stream().map(POMParser::new).toList();
+        List<IVersionProvider> providers = new ArrayList<>();
 
-        POMParser rootParser = new POMParser(rootPom);
-        String rootVerStr = rootParser.getVersionString();
-        Version current = Version.fromString(rootVerStr);
+        for (VersioningRule rule : config.versioningConfig().versionRules()) {
+            providers.add(new RegexVersionProvider(rule));
+        }
+
+        List<File> files = FileFinder.findPomFiles();
+
+        VersionManager versionManager = new VersionManager(providers, files);
+
+        Version current = versionManager.readCurrentVersion();
 
         if (CliCommand.STRING.equals(arguments.cmd())) {
             System.out.println(current.displayString());
@@ -36,7 +49,7 @@ public class Main {
             case SUFFIX -> current.snapshot();
             default -> throw new IllegalStateException("Unexpected value: " + arguments.cmd());
         };
-        rootParser.setVersionString(nextVer.toString());
-        pomParsers.forEach(parser -> parser.setVersionString(nextVer.toString()));
+
+        versionManager.writeVersion(nextVer);
     }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v1.dtd">
+<patch version="1">
+    <topic name="versioning">
+        <category name="additions">
+            <breaking severity="trivial">
+                <entry>requirement for config file reference, same as patch accumulator and changelog builder</entry>
+            </breaking>
+        </category>
+    </topic>
+</patch>
