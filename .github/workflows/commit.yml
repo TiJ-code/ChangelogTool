@@ -60,5 +60,16 @@ jobs:
           download_asset "ChangelogVersioning.tool"
           chmod +x *.tool
 
-      - name: Do Commit
-        run: ./ChangelogVersioning.tool config_changelog_tool.xml --stage ${{ github.event.inputs.bump }}
+      - name: Bump
+        run: |
+          ./ChangelogVersioning.tool config_changelog_tool.xml --stage ${{ github.event.inputs.bump }}
+          ./ChangelogVersioning.tool config_changelog_tool.xml --suffix
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add .
+          git commit -m "[ACTION] prepare next phase"
+          git push origin ${{ github.ref_name }}
