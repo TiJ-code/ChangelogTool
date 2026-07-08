@@ -1,3 +1,5 @@
 package tij.changelogs.versioning.cli;
 
-public record CliArguments(CliCommand cmd, StageType stage) {}
+import java.nio.file.Path;
+
+public record CliArguments(Path configFilePath, CliCommand cmd, StageType stage) {}
