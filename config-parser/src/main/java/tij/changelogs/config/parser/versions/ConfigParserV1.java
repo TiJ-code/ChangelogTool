@@ -36,7 +36,7 @@ public final class ConfigParserV1 {
         List<String> breaking =
                 parseEntries(root, TAG_BREAKING_CHANGES);
 
-        return new Config(categories, topics, breaking);
+        return new Config(null, categories, topics, breaking);
     }
 
     private static Map<String, String> parseCategories(Element root) {
