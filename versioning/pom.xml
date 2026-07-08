@@ -47,6 +47,10 @@
                         tij.changelogs.versioning.Main
                     </mainClass>
 
+                    <buildArgs>
+                        <buildArg>-H:IncludeResources=.*</buildArg>
+                    </buildArgs>
+
                     <imageName>ChangelogVersioning.tool</imageName>
                 </configuration>
             </plugin>
