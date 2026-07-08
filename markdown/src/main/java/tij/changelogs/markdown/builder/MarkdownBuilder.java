@@ -60,9 +60,28 @@ public final class MarkdownBuilder {
                                             .toList()
                             );
                 }
+            }
 
-                for (String cat : categoryEntries.keySet()) {
-                    for (String entry : categoryEntries.get(cat)) {
+            for (String cat : categoryEntries.keySet()) {
+                for (String entry : categoryEntries.get(cat)) {
+                    sb.append("- ")
+                            .append(cat)
+                            .append(" ")
+                            .append(entry)
+                            .append("\n");
+                }
+            }
+
+            for (String severity : breakingMap.keySet()) {
+                sb.append(MD_HEADER_3)
+                        .append("Breaking Changes: ")
+                        .append(toTitle(severity))
+                        .append("\n");
+
+                Map<String, List<String>> byCategory = breakingMap.get(severity);
+
+                for (String cat : byCategory.keySet()) {
+                    for (String entry : byCategory.get(cat)) {
                         sb.append("- ")
                                 .append(cat)
                                 .append(" ")
@@ -70,28 +89,9 @@ public final class MarkdownBuilder {
                                 .append("\n");
                     }
                 }
-
-                for (String severity : breakingMap.keySet()) {
-                    sb.append(MD_HEADER_3)
-                            .append("Breaking Changes: ")
-                            .append(toTitle(severity))
-                            .append("\n");
-
-                    Map<String, List<String>> byCategory = breakingMap.get(severity);
-
-                    for (String cat : byCategory.keySet()) {
-                        for (String entry : byCategory.get(cat)) {
-                            sb.append("- ")
-                                    .append(cat)
-                                    .append(" ")
-                                    .append(entry)
-                                    .append("\n");
-                        }
-                    }
-                }
-
-                sb.append("\n");
             }
+
+            sb.append("\n");
         }
 
         return sb.toString();
