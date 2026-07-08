@@ -19,6 +19,10 @@ jobs:
       contents: write
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
       - name: Download dev-tool via GitHub API
         shell: bash
         run: |
