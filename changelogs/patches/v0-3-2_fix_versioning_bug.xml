@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v1.dtd">
+<patch version="1">
+    <topic name="versioning">
+        <category name="fixes">
+            <entry>bug with versioning not resetting the lesser semantic version parts</entry>
+        </category>
+    </topic>
+</patch>

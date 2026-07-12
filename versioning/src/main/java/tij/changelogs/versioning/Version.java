@@ -53,8 +53,8 @@ public record Version(int major, int minor, int patch, Optional<String> optional
 
         return switch (type) {
             case PATCH -> new Version(major, minor, patch + 1, Optional.empty());
-            case MINOR -> new Version(major, minor + 1, patch, Optional.empty());
-            case MAJOR -> new Version(major + 1, minor, patch, Optional.empty());
+            case MINOR -> new Version(major, minor + 1, 0, Optional.empty());
+            case MAJOR -> new Version(major + 1, 0, 0, Optional.empty());
         };
     }
 
