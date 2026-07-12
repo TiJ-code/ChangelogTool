@@ -1,17 +1,6 @@
 name: Release
 on:
   workflow_dispatch:
-    inputs:
-      next-type:
-        description: Next version
-        type: choice
-        required: true
-        default: patch
-        options:
-          - patch
-          - minor
-          - major
-
 
 jobs:
   build:
@@ -96,16 +85,3 @@ jobs:
           make_latest: true
           name: Release ${{ steps.version.outputs.version }}
           generate_release_notes: true
-
-      - name: Next Dev Version Bump
-        shell: bash
-        run: |
-          ./ChangelogVersioning.tool config_changelog_tool.xml --stage ${{ inputs.next-type }}
-          ./ChangelogVersioning.tool config_changelog_tool.xml --suffix
-
-      - name: Commit
-        shell: bash
-        run: |
-          git add .
-          git commit -m "[ACTION] prepare next phase"
-          git push
