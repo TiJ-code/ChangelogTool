@@ -5,7 +5,7 @@ import tij.changelogs.patches.config.ReducedConfig;
 import tij.changelogs.xmlModel.XmlBreaking;
 import tij.changelogs.xmlModel.XmlCategory;
 import tij.changelogs.xmlModel.XmlEntry;
-import tij.changelogs.xmlModel.XmlTopic;
+import tij.changelogs.xmlModel.XmlComponent;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -15,21 +15,21 @@ import java.util.List;
 public final class PatchParser {
     private PatchParser() {}
 
-    public static List<XmlTopic> parsePatches(File[] patchFile, ReducedConfig config) {
-        List<XmlTopic> all = new ArrayList<>();
+    public static List<XmlComponent> parsePatches(File[] patchFile, ReducedConfig config) {
+        List<XmlComponent> all = new ArrayList<>();
 
         for (File f : patchFile) {
             PatchFileVersion patchFileVersion = parseVersionWithoutDtd(f);
-            List<XmlTopic> topics = patchFileVersion.parseFunction.apply(f, config);
+            List<XmlComponent> topics = patchFileVersion.parseFunction.apply(f, config);
             mergeTopics(all, topics, config);
         }
 
         return all;
     }
 
-    private static void mergeTopics(List<XmlTopic> result, List<XmlTopic> toMerge, ReducedConfig config) {
-        for (XmlTopic incomingTopic : toMerge) {
-            XmlTopic existingTopic = findMatchingTopic(incomingTopic, result);
+    private static void mergeTopics(List<XmlComponent> result, List<XmlComponent> toMerge, ReducedConfig config) {
+        for (XmlComponent incomingTopic : toMerge) {
+            XmlComponent existingTopic = findMatchingTopic(incomingTopic, result);
 
             if (existingTopic == null) {
                 result.add(incomingTopic);
@@ -51,7 +51,7 @@ public final class PatchParser {
             }
 
             result.remove(existingTopic);
-            result.add(new XmlTopic(existingTopic.name(), mergedCategories));
+            result.add(new XmlComponent(existingTopic.path(), mergedCategories));
         }
 
 
@@ -93,10 +93,10 @@ public final class PatchParser {
         }
     }
 
-    private static XmlTopic findMatchingTopic(XmlTopic target, List<XmlTopic> topics) {
-        for (XmlTopic xmlTopic : topics) {
-            if (xmlTopic.name().equals(target.name()))
-                return xmlTopic;
+    private static XmlComponent findMatchingTopic(XmlComponent target, List<XmlComponent> topics) {
+        for (XmlComponent xmlComponent : topics) {
+            if (xmlComponent.path().equals(target.path()))
+                return xmlComponent;
         }
         return null;
     }

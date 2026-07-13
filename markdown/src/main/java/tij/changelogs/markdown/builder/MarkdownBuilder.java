@@ -4,7 +4,7 @@ import tij.changelogs.config.Config;
 import tij.changelogs.xmlModel.XmlBreaking;
 import tij.changelogs.xmlModel.XmlCategory;
 import tij.changelogs.xmlModel.XmlEntry;
-import tij.changelogs.xmlModel.XmlTopic;
+import tij.changelogs.xmlModel.XmlComponent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,16 +18,16 @@ public final class MarkdownBuilder {
     private static final String MD_HEADER_2 = "## ";
     private static final String MD_HEADER_3 = "### ";
 
-    public static String build(List<XmlTopic> topics, Config config) {
+    public static String build(List<XmlComponent> topics, Config config) {
         StringBuilder sb = new StringBuilder();
 
-        Map<String, XmlTopic> topicMap = new HashMap<>();
-        for (XmlTopic t : topics) {
-            topicMap.put(t.name(), t);
+        Map<String, XmlComponent> topicMap = new HashMap<>();
+        for (XmlComponent t : topics) {
+            topicMap.put(t.path(), t);
         }
 
         for (String topicName : config.topics()) {
-            XmlTopic topic = topicMap.get(topicName);
+            XmlComponent topic = topicMap.get(topicName);
             if (topic == null)
                 continue;
 
