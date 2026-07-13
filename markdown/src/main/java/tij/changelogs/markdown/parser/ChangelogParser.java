@@ -8,7 +8,7 @@ import tij.changelogs.config.Config;
 import tij.changelogs.xmlModel.XmlBreaking;
 import tij.changelogs.xmlModel.XmlCategory;
 import tij.changelogs.xmlModel.XmlEntry;
-import tij.changelogs.xmlModel.XmlTopic;
+import tij.changelogs.xmlModel.XmlComponent;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -22,7 +22,7 @@ import static tij.changelogs.xmlModel.XmlConstants.*;
 public final class ChangelogParser {
     private ChangelogParser() {}
 
-    public static List<XmlTopic> parse(File changelogFile, Config config) {
+    public static List<XmlComponent> parse(File changelogFile, Config config) {
         try {
             var factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(false);
@@ -63,8 +63,8 @@ public final class ChangelogParser {
         return List.of();
     }
 
-    private static List<XmlTopic> parseTopics(Element root, Config config) {
-        List<XmlTopic> topics = new ArrayList<>();
+    private static List<XmlComponent> parseTopics(Element root, Config config) {
+        List<XmlComponent> topics = new ArrayList<>();
 
         NodeList topicNodes = root.getChildNodes();
 
@@ -93,7 +93,7 @@ public final class ChangelogParser {
                 throw new RuntimeException("Duplicate topic: " + topicName);
             }
 
-            topics.add(new XmlTopic(topicName, parseCategories(topicElement, config)));
+            topics.add(new XmlComponent(topicName, parseCategories(topicElement, config)));
         }
 
         if (topics.size() > config.topics().size()) {

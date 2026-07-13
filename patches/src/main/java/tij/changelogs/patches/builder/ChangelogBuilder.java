@@ -6,9 +6,8 @@ import tij.changelogs.config.ConfigConstants;
 import tij.changelogs.xmlModel.XmlBreaking;
 import tij.changelogs.xmlModel.XmlCategory;
 import tij.changelogs.xmlModel.XmlEntry;
-import tij.changelogs.xmlModel.XmlTopic;
+import tij.changelogs.xmlModel.XmlComponent;
 
-import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerFactory;
@@ -23,7 +22,7 @@ import static tij.changelogs.xmlModel.XmlConstants.*;
 public final class ChangelogBuilder {
     private ChangelogBuilder() {}
 
-    public static void build(List<XmlTopic> cumulatedTopics) {
+    public static void build(List<XmlComponent> cumulatedTopics) {
         try {
             Document doc = buildDocument(cumulatedTopics);
 
@@ -49,7 +48,7 @@ public final class ChangelogBuilder {
         }
     }
 
-    private static Document buildDocument(List<XmlTopic> topics) {
+    private static Document buildDocument(List<XmlComponent> topics) {
         try {
             var factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringElementContentWhitespace(true);
@@ -64,7 +63,7 @@ public final class ChangelogBuilder {
 
             var rootElement = doc.createElement(TAG_CHANGELOG);
 
-            for (XmlTopic topic : topics) {
+            for (XmlComponent topic : topics) {
                 var topicElement = createTopic(doc, topic);
                 rootElement.appendChild(topicElement);
             }
@@ -77,10 +76,10 @@ public final class ChangelogBuilder {
         }
     }
 
-    private static Element createTopic(Document doc, XmlTopic topic) {
+    private static Element createTopic(Document doc, XmlComponent topic) {
         var topicElement = doc.createElement(TAG_TOPIC);
 
-        topicElement.setAttribute(ATTRIBUTE_TOPIC_NAME, topic.name());
+        topicElement.setAttribute(ATTRIBUTE_TOPIC_NAME, topic.path());
 
         for (XmlCategory category : topic.categories()) {
             var categoryElement = createCategory(doc, category);

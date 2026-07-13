@@ -5,12 +5,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tij.changelogs.config.Config;
+import tij.changelogs.config.model.ComponentConfig;
+import tij.changelogs.config.model.TopicConfig;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class ConfigParserV1 {
     private ConfigParserV1() {}
@@ -30,71 +28,115 @@ public final class ConfigParserV1 {
         Map<String, String> categories =
                 parseCategories(root);
 
-        List<String> topics =
+        List<String> oldTopics =
                 parseEntries(root, TAG_TOPICS);
 
         List<String> breaking =
                 parseEntries(root, TAG_BREAKING_CHANGES);
 
-        return new Config(null, categories, topics, breaking);
-    }
 
-    private static Map<String, String> parseCategories(Element root) {
-        NodeList categoriesList = root.getElementsByTagName(TAG_CATEGORIES);
+        Map<String, ComponentConfig> components = new HashMap<>();
 
-        if (categoriesList.getLength() != 1) {
-            throw new RuntimeException("There must be exactly one <" + TAG_CATEGORIES + ">");
+        List<String> refs = new ArrayList<>();
+
+        for (String topic : oldTopics) {
+            ComponentConfig component =
+                    new ComponentConfig(
+                            topic,
+                            topic,
+                            List.of()
+                    );
+
+            components.put(topic, component);
+            refs.add(topic);
         }
 
-        Element parent = (Element) categoriesList.item(0);
 
-        NodeList categories = parent.getElementsByTagName(TAG_CATEGORY);
+        List<TopicConfig> topics = List.of(
+                new TopicConfig(
+                        "default",
+                        refs
+                )
+        );
+
+
+        return new Config(
+                null,
+                categories,
+                components,
+                topics,
+                breaking
+        );
+    }
+
+
+    private static Map<String, String> parseCategories(Element root) {
+        NodeList categoriesList =
+                root.getElementsByTagName(TAG_CATEGORIES);
+
+        if (categoriesList.getLength() != 1) {
+            throw new RuntimeException(
+                    "There must be exactly one <" + TAG_CATEGORIES + ">"
+            );
+        }
+
+        Element parent =
+                (Element) categoriesList.item(0);
+
+        NodeList categories =
+                parent.getElementsByTagName(TAG_CATEGORY);
 
         Map<String, String> result = new HashMap<>();
 
         for (int i = 0; i < categories.getLength(); i++) {
+
             Node node = categories.item(i);
 
             if (node.getNodeType() != Node.ELEMENT_NODE)
                 continue;
 
-            Element nodeEl = (Element) node;
+            Element element = (Element) node;
 
-            if (!TAG_CATEGORY.equals(nodeEl.getTagName()))
-                continue;
-
-            String attributeXmlWrapper = nodeEl.getAttribute(ATTRIBUTE_CATEGORY_NAME);
-            String textContent = nodeEl.getTextContent().trim();
-
-            result.put(attributeXmlWrapper, textContent);
+            result.put(
+                    element.getAttribute(ATTRIBUTE_CATEGORY_NAME),
+                    element.getTextContent().trim()
+            );
         }
 
         return result;
     }
 
-    private static List<String> parseEntries(Element root, String parentTag) {
 
-        NodeList parents = root.getElementsByTagName(parentTag);
+    private static List<String> parseEntries(
+            Element root,
+            String parentTag
+    ) {
+
+        NodeList parents =
+                root.getElementsByTagName(parentTag);
 
         if (parents.getLength() != 1) {
-            throw new RuntimeException("There must be exactly one <" + parentTag + ">");
+            throw new RuntimeException(
+                    "There must be exactly one <" + parentTag + ">"
+            );
         }
 
-        Element parent = (Element) parents.item(0);
+        Element parent =
+                (Element) parents.item(0);
 
-        NodeList entries = parent.getElementsByTagName(TAG_ENTRY);
+        NodeList entries =
+                parent.getElementsByTagName(TAG_ENTRY);
 
-        List<String> result = new ArrayList<>();
+        Set<String> result = new HashSet<>();
 
         for (int i = 0; i < entries.getLength(); i++) {
-            Element e = (Element) entries.item(i);
-            result.add(e.getTextContent().trim());
+            result.add(
+                    entries.item(i)
+                            .getTextContent()
+                            .trim()
+            );
         }
 
-        return makeUnique(result);
-    }
-
-    private static List<String> makeUnique(List<String> in) {
-        return new ArrayList<>(new HashSet<>(in));
+        return new ArrayList<>(result);
     }
 }

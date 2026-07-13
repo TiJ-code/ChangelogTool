@@ -22,19 +22,12 @@ import java.util.List;
 
 import static tij.changelogs.xmlModel.XmlConstants.*;
 
-public final class PatchParserV1 {
-    private static final String TAG_TOPIC = "topic";
-    private static final String ATTRIBUTE_TOPIC_NAME = "name";
+public final class PatchParserV2 {
 
-    private PatchParserV1() {}
+    private PatchParserV2() {}
 
-    public static List<XmlComponent> parse(
-            File patchFile,
-            ReducedConfig config
-    ) {
-        try (InputStream is = Files.newInputStream(
-                patchFile.toPath().toAbsolutePath()
-        )) {
+    public static List<XmlComponent> parse(File patchFile, ReducedConfig config) {
+        try (InputStream is = Files.newInputStream(patchFile.toPath().toAbsolutePath())) {
 
             var factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(false);
@@ -47,15 +40,13 @@ public final class PatchParserV1 {
 
             Document doc = builder.parse(is);
 
-            if (!doc.getDocumentElement()
-                    .getTagName()
-                    .equals(TAG_PATCH)) {
+            if (!doc.getDocumentElement().getTagName().equals(TAG_PATCH)) {
                 return List.of();
             }
 
             List<XmlComponent> components = new ArrayList<>();
 
-            parseTopics(doc, components, config);
+            parseComponents(doc, components, config);
 
             return components;
 
@@ -65,63 +56,55 @@ public final class PatchParserV1 {
     }
 
 
-    private static void parseTopics(
+    private static void parseComponents(
             Document doc,
             List<XmlComponent> components,
             ReducedConfig config
     ) {
+        NodeList componentNodes = doc.getElementsByTagName(TAG_COMPONENT);
 
-        NodeList topicNodes =
-                doc.getElementsByTagName(TAG_TOPIC);
-
-        if (topicNodes.getLength() > config.componentValues().size()) {
+        if (componentNodes.getLength() > config.componentValues().size()) {
             throw new RuntimeException(
-                    "Too many topic nodes in patch, max possible: "
+                    "Too many component nodes in patch, max possible: "
                             + config.componentValues().size()
             );
         }
 
+        for (int i = 0; i < componentNodes.getLength(); i++) {
 
-        for (int i = 0; i < topicNodes.getLength(); i++) {
-
-            Node node = topicNodes.item(i);
+            Node node = componentNodes.item(i);
 
             if (node.getNodeType() != Node.ELEMENT_NODE)
                 continue;
 
-
             Element element = (Element) node;
 
-
-            if (!element.hasAttribute(ATTRIBUTE_TOPIC_NAME)) {
+            if (!element.hasAttribute(ATTRIBUTE_COMPONENT_PATH)) {
                 throw new RuntimeException(
                         "No attribute \"%s\" specified on <%s>"
                                 .formatted(
-                                        ATTRIBUTE_TOPIC_NAME,
-                                        TAG_TOPIC
+                                        ATTRIBUTE_COMPONENT_PATH,
+                                        TAG_COMPONENT
                                 )
                 );
             }
 
+            String path =
+                    element.getAttribute(ATTRIBUTE_COMPONENT_PATH);
 
-            String topic =
-                    element.getAttribute(ATTRIBUTE_TOPIC_NAME);
-
-
-            if (!config.componentValues().contains(topic)) {
+            if (!config.componentValues().contains(path)) {
                 throw new RuntimeException(
-                        "Invalid topic \"%s\" specified: %s"
+                        "Invalid component \"%s\" specified: %s"
                                 .formatted(
-                                        ATTRIBUTE_TOPIC_NAME,
-                                        topic
+                                        ATTRIBUTE_COMPONENT_PATH,
+                                        path
                                 )
                 );
             }
-
 
             components.add(
                     new XmlComponent(
-                            topic,
+                            path,
                             parseCategories(element, config)
                     )
             );
@@ -130,37 +113,32 @@ public final class PatchParserV1 {
 
 
     private static List<XmlCategory> parseCategories(
-            Element topicElement,
+            Element componentElement,
             ReducedConfig config
     ) {
-
         List<XmlCategory> categories = new ArrayList<>();
 
-        NodeList nodes =
-                topicElement.getElementsByTagName(TAG_CATEGORY);
+        NodeList categoryNodes =
+                componentElement.getElementsByTagName(TAG_CATEGORY);
 
-
-        if (nodes.getLength() > config.categoryValues().size()) {
+        if (categoryNodes.getLength() > config.categoryValues().size()) {
             throw new RuntimeException(
-                    "Too many category nodes in topic \"%s\", max possible %d"
+                    "Too many category nodes in component \"%s\", max possible %d"
                             .formatted(
-                                    topicElement.getAttribute(ATTRIBUTE_TOPIC_NAME),
+                                    componentElement.getAttribute(ATTRIBUTE_COMPONENT_PATH),
                                     config.categoryValues().size()
                             )
             );
         }
 
+        for (int i = 0; i < categoryNodes.getLength(); i++) {
 
-        for (int i = 0; i < nodes.getLength(); i++) {
-
-            Node node = nodes.item(i);
+            Node node = categoryNodes.item(i);
 
             if (node.getNodeType() != Node.ELEMENT_NODE)
                 continue;
 
-
             Element element = (Element) node;
-
 
             if (!element.hasAttribute(ATTRIBUTE_CATEGORY_NAME)) {
                 throw new RuntimeException(
@@ -172,17 +150,14 @@ public final class PatchParserV1 {
                 );
             }
 
-
             String category =
                     element.getAttribute(ATTRIBUTE_CATEGORY_NAME);
-
 
             if (!config.categoryValues().contains(category)) {
                 throw new RuntimeException(
                         "Invalid category specified: " + category
                 );
             }
-
 
             categories.add(
                     new XmlCategory(
@@ -201,12 +176,10 @@ public final class PatchParserV1 {
             Element categoryElement,
             ReducedConfig config
     ) {
-
         List<XmlBreaking> breakings = new ArrayList<>();
 
         NodeList nodes =
                 categoryElement.getElementsByTagName(TAG_BREAKING);
-
 
         for (int i = 0; i < nodes.getLength(); i++) {
 
@@ -215,9 +188,7 @@ public final class PatchParserV1 {
             if (node.getNodeType() != Node.ELEMENT_NODE)
                 continue;
 
-
             Element element = (Element) node;
-
 
             if (!element.hasAttribute(ATTRIBUTE_BREAKING_SEVERITY)) {
                 throw new RuntimeException(
@@ -229,17 +200,14 @@ public final class PatchParserV1 {
                 );
             }
 
-
             String severity =
                     element.getAttribute(ATTRIBUTE_BREAKING_SEVERITY);
-
 
             if (!config.breakingLevelValues().contains(severity)) {
                 throw new RuntimeException(
                         "Invalid breaking severity: " + severity
                 );
             }
-
 
             breakings.add(
                     new XmlBreaking(
@@ -253,13 +221,10 @@ public final class PatchParserV1 {
     }
 
 
-    private static List<XmlEntry> parseEntries(Element parent) {
-
+    private static List<XmlEntry> parseEntries(Element parentElement) {
         List<XmlEntry> entries = new ArrayList<>();
 
-        NodeList children =
-                parent.getChildNodes();
-
+        NodeList children = parentElement.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
 
@@ -268,11 +233,9 @@ public final class PatchParserV1 {
             if (node.getNodeType() != Node.ELEMENT_NODE)
                 continue;
 
-
             Element element = (Element) node;
 
-
-            if (TAG_ENTRY.equals(element.getTagName())) {
+            if (element.getTagName().equals(TAG_ENTRY)) {
                 entries.add(
                         new XmlEntry(
                                 element.getTextContent()
@@ -304,7 +267,7 @@ public final class PatchParserV1 {
             String resourcePath = "/" + fileName;
 
             InputStream resource =
-                    PatchParserV1.class.getResourceAsStream(resourcePath);
+                    PatchParserV2.class.getResourceAsStream(resourcePath);
 
             if (resource != null) {
                 return new InputSource(resource);

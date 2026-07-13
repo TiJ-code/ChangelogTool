@@ -13,6 +13,6 @@ public final class ConfigParserV2 {
 
         VersioningConfig vcfg = VersioningParser.parse(doc.getDocumentElement());
 
-        return new Config(vcfg, c.categories(), c.topics(), c.breakingLevels());
+        return new Config(vcfg, c.categories(), c.components(), c.topics(), c.breakingLevels());
     }
 }
