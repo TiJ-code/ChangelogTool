@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE config SYSTEM "config.v2.dtd">
-<config version="2">
+<!DOCTYPE config SYSTEM "config.v3.dtd">
+<config version="3">
     <versioning>
         <rule name="maven">
             <filename regex=".*/?pom\.xml"/>
@@ -13,13 +13,23 @@
         <category name="fixes">fixed</category>
         <category name="removals">removed</category>
     </categories>
+    <components>
+        <component id="archive" name="Archive"/>
+        <component id="config-parser" name="Config Parser"/>
+        <component id="markdown" name="Markdown"/>
+        <component id="patches" name="Patches"/>
+        <component id="versioning" name="Versioning"/>
+        <component id="xml-model" name="XML Model"/>
+    </components>
     <topics>
-        <entry>archive</entry>
-        <entry>config parser</entry>
-        <entry>markdown</entry>
-        <entry>patches</entry>
-        <entry>versioning</entry>
-        <entry>xml-model</entry>
+        <topic name="default">
+            <component-ref ref="archive"/>
+            <component-ref ref="config-parser"/>
+            <component-ref ref="markdown"/>
+            <component-ref ref="patches"/>
+            <component-ref ref="versioning"/>
+            <component-ref ref="xml-model"/>
+        </topic>
     </topics>
     <breaking.changes>
         <entry>major</entry>

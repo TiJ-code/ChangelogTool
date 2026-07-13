@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!ELEMENT config (versioning?, categories?, components?, topics?, breaking.changes?)>
+<!ATTLIST config version (3) #REQUIRED>
+
+<!-- Versioning -->
+
+<!ELEMENT versioning (rule+)>
+
+<!ELEMENT rule (filename, version)>
+<!ATTLIST rule name CDATA #IMPLIED>
+
+<!ELEMENT filename EMPTY>
+<!ATTLIST filename regex CDATA #REQUIRED>
+
+<!ELEMENT version EMPTY>
+<!ATTLIST version regex CDATA #REQUIRED>
+
+<!-- Categories -->
+
+<!ELEMENT categories (category*)>
+
+<!ELEMENT category (#PCDATA)>
+<!ATTLIST category name CDATA #REQUIRED>
+
+<!-- Components -->
+
+<!ELEMENT components (component*)>
+
+<!ELEMENT component (component*)>
+<!ATTLIST component
+        id CDATA #REQUIRED
+        name CDATA #IMPLIED>
+
+<!-- Changelog Views -->
+
+<!ELEMENT topics (topic*)>
+
+<!ELEMENT topic (component-ref*, topic*)>
+<!ATTLIST topic
+        name CDATA #REQUIRED>
+
+<!ELEMENT component-ref EMPTY>
+<!ATTLIST component-ref
+        ref CDATA #REQUIRED>
+
+<!-- Breaking Changes -->
+
+<!ELEMENT breaking.changes (entry*)>
+
+<!ELEMENT entry (#PCDATA)>
