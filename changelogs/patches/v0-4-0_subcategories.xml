@@ -8,9 +8,11 @@
                 <entry>configurable changelog topics referencing components</entry>
             </breaking>
             <entry>config schema version 3 (config.v3.dtd) with components and component-ref-based topics</entry>
+            <entry>config schema validation (config.v3.xsd) with maximum topic and component depth validation</entry>
         </category>
         <category name="refactorings">
             <entry>configuration parser to support reusable components and topic views</entry>
+            <entry>integration of XSD validation into version 3 configuration parsing</entry>
             <entry>backwards compatibility with configuration versions 1 and 2, mapping legacy topic entries onto a synthetic default component/topic pair</entry>
             <entry>module exports to expose the config model package</entry>
         </category>
