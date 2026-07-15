@@ -9,9 +9,9 @@ import tij.changelogs.config.parser.versions.ConfigParserV3;
 import java.util.function.Function;
 
 public enum ConfigFileVersion {
-    v1("1", ConfigParserV1::parse),
+    v3("3", ConfigParserV3::parse),
     v2("2", ConfigParserV2::parse),
-    v3("3", ConfigParserV3::parse);
+    v1("1", ConfigParserV1::parse);
 
     public final String attribute;
     public final Function<Document, Config> parseFunction;

@@ -1,12 +1,15 @@
 package tij.changelogs.patches.builder;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigConstants;
+import tij.changelogs.config.model.TopicConfig;
 import tij.changelogs.xmlModel.XmlBreaking;
 import tij.changelogs.xmlModel.XmlCategory;
-import tij.changelogs.xmlModel.XmlEntry;
 import tij.changelogs.xmlModel.XmlComponent;
+import tij.changelogs.xmlModel.XmlEntry;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -16,59 +19,96 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static tij.changelogs.xmlModel.XmlConstants.*;
 
 public final class ChangelogBuilder {
     private ChangelogBuilder() {}
 
-    public static void build(List<XmlComponent> cumulatedTopics) {
+    public static void build(Config config, List<XmlComponent> components) {
         try {
-            Document doc = buildDocument(cumulatedTopics);
+            Document doc = buildDocument(config, components);
 
             var transformerFactory = TransformerFactory.newInstance();
+
             var transformer = transformerFactory.newTransformer();
 
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(
+                    OutputKeys.METHOD,
+                    "xml"
+            );
+
+            transformer.setOutputProperty(
+                    OutputKeys.ENCODING,
+                    "utf-8"
+            );
+
+            transformer.setOutputProperty(
+                    OutputKeys.INDENT,
+                    "yes"
+            );
+
             transformer.setOutputProperty(
                     "{http://xml.apache.org/xslt}indent-amount",
                     "4"
             );
 
-
-            final File cumulatedFile = new File(ConfigConstants.CUMULATED_DIR, "cumulated.xml");
+            File cumulatedFile = new File(
+                            ConfigConstants.CUMULATED_DIR,
+                            "cumulated.xml"
+            );
 
             try (FileOutputStream out = new FileOutputStream(cumulatedFile)) {
-                transformer.transform(new DOMSource(doc), new StreamResult(out));
+                transformer.transform(
+                        new DOMSource(doc),
+                        new StreamResult(out)
+                );
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static Document buildDocument(List<XmlComponent> topics) {
+    private static Document buildDocument(Config config, List<XmlComponent> components) {
         try {
             var factory = DocumentBuilderFactory.newInstance();
+
             factory.setIgnoringElementContentWhitespace(true);
             factory.setIgnoringComments(true);
             factory.setValidating(false);
             factory.setNamespaceAware(false);
-            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            factory.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                    false
+            );
 
             var builder = factory.newDocumentBuilder();
 
             Document doc = builder.newDocument();
 
-            var rootElement = doc.createElement(TAG_CHANGELOG);
+            Element root = doc.createElement(TAG_CHANGELOG);
 
-            for (XmlComponent topic : topics) {
-                var topicElement = createTopic(doc, topic);
-                rootElement.appendChild(topicElement);
+            Map<String, XmlComponent> componentMap = components.stream()
+                            .collect(Collectors.toMap(
+                                    XmlComponent::path,
+                                    Function.identity()
+                            ));
+
+            for (TopicConfig topic : config.topics()) {
+                root.appendChild(
+                        createTopic(
+                                doc,
+                                topic,
+                                componentMap
+                        )
+                );
             }
 
-            doc.appendChild(rootElement);
+            doc.appendChild(root);
 
             return doc;
         } catch (Exception e) {
@@ -76,27 +116,57 @@ public final class ChangelogBuilder {
         }
     }
 
-    private static Element createTopic(Document doc, XmlComponent topic) {
-        var topicElement = doc.createElement(TAG_TOPIC);
+    private static Element createTopic(Document doc, TopicConfig topic, Map<String, XmlComponent> components) {
+        Element topicElement = doc.createElement(TAG_TOPIC);
 
-        topicElement.setAttribute(ATTRIBUTE_TOPIC_NAME, topic.path());
+        topicElement.setAttribute(ATTRIBUTE_TOPIC_NAME, topic.name());
 
-        for (XmlCategory category : topic.categories()) {
-            var categoryElement = createCategory(doc, category);
-            topicElement.appendChild(categoryElement);
+        for (String ref : topic.componentRefs()) {
+            XmlComponent component = components.get(ref);
+
+            if (component == null)
+                continue;
+
+            topicElement.appendChild(
+                    createComponent(
+                            doc,
+                            component
+                    )
+            );
         }
 
         return topicElement;
     }
 
+    private static Element createComponent(Document doc, XmlComponent component) {
+        Element componentElement = doc.createElement(TAG_COMPONENT);
+
+        componentElement.setAttribute(ATTRIBUTE_COMPONENT_REF, component.path());
+
+        for (XmlCategory category : component.categories()) {
+            componentElement.appendChild(
+                    createCategory(
+                            doc,
+                            category
+                    )
+            );
+        }
+
+        return componentElement;
+    }
+
     private static Element createCategory(Document doc, XmlCategory category) {
-        var categoryElement = doc.createElement(TAG_CATEGORY);
+        Element categoryElement = doc.createElement(TAG_CATEGORY);
 
         categoryElement.setAttribute(ATTRIBUTE_CATEGORY_NAME, category.name());
 
         for (XmlBreaking breaking : category.breakingLevels()) {
-            var breakingElement = createBreaking(doc, breaking);
-            categoryElement.appendChild(breakingElement);
+            categoryElement.appendChild(
+                    createBreaking(
+                            doc,
+                            breaking
+                    )
+            );
         }
 
         appendEntries(doc, categoryElement, category.topLevelEntries());
@@ -105,7 +175,7 @@ public final class ChangelogBuilder {
     }
 
     private static Element createBreaking(Document doc, XmlBreaking breaking) {
-        var breakingElement = doc.createElement(TAG_BREAKING);
+        Element breakingElement = doc.createElement(TAG_BREAKING);
 
         breakingElement.setAttribute(ATTRIBUTE_BREAKING_SEVERITY, breaking.severity());
 
@@ -114,15 +184,15 @@ public final class ChangelogBuilder {
         return breakingElement;
     }
 
-    private static void appendEntries(Document doc, Element parent, List<XmlEntry> entriesToAdd) {
-        for (XmlEntry entry : entriesToAdd) {
-            var entryElement = createEntry(doc, entry);
-            parent.appendChild(entryElement);
+    private static void appendEntries(Document doc, Element parent, List<XmlEntry> entries) {
+        for (XmlEntry entry : entries) {
+            parent.appendChild(createEntry(doc, entry));
         }
     }
 
+
     private static Element createEntry(Document doc, XmlEntry entry) {
-        var entryElement = doc.createElement(TAG_ENTRY);
+        Element entryElement = doc.createElement(TAG_ENTRY);
 
         entryElement.setTextContent(entry.value());
 
