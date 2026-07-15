@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v2.dtd">
+<patch version="2">
+    <component ref="config-parser">
+        <category name="additions">
+            <breaking severity="major">
+                <entry>reusable hierarchical component definitions</entry>
+                <entry>configurable changelog topics referencing components</entry>
+            </breaking>
+        </category>
+        <category name="refactorings">
+            <entry>configuration parser to support reusable components and topic views</entry>
+            <entry>backwards compatibility with configuration versions 1 and 2</entry>
+        </category>
+    </component>
+    <component ref="patches">
+        <category name="additions">
+            <breaking severity="major">
+                <entry>component-based patch format replacing topic-based patches</entry>
+            </breaking>
+        </category>
+        <category name="refactorings">
+            <entry>patch parser to the new component model</entry>
+            <entry>backwards compatibility with version 1 patch files</entry>
+        </category>
+    </component>
+    <component ref="xml-model">
+        <category name="refactorings">
+            <entry>XML model by replacing XmlTopic with XmlComponent</entry>
+            <entry>XML constants to match the component-based patch schema</entry>
+        </category>
+    </component>
+</patch>

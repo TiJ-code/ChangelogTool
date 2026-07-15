@@ -10,7 +10,7 @@ public final class XmlConstants {
     public static final String TAG_ENTRY = "entry";
 
     public static final String ATTRIBUTE_PATCH_VERSION = "version";
-    public static final String ATTRIBUTE_COMPONENT_PATH = "path";
+    public static final String ATTRIBUTE_COMPONENT_REF = "ref";
     public static final String ATTRIBUTE_TOPIC_NAME = "name";
     public static final String ATTRIBUTE_CATEGORY_NAME = "name";
     public static final String ATTRIBUTE_BREAKING_SEVERITY = "severity";

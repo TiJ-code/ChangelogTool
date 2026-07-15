@@ -1,5 +1,6 @@
 package tij.changelogs.patches;
 
+import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigConstants;
 import tij.changelogs.config.ConfigSystem;
 import tij.changelogs.patches.builder.ChangelogBuilder;
@@ -16,7 +17,10 @@ import java.util.List;
 public class Main {
     static void main(String[] args) {
         Path configFilePath = CliParser.parse(args);
-        ReducedConfig c = ReducedConfig.reduce(ConfigSystem.load(configFilePath));
+
+        Config config = ConfigSystem.load(configFilePath);
+
+        ReducedConfig reducedConfig = ReducedConfig.reduce(config);
 
         File dir = ConfigConstants.PATCHES_DIR;
 
@@ -24,9 +28,11 @@ public class Main {
                 name.toLowerCase().endsWith(".xml")
         );
 
+
         if (filesArray == null) {
             throw new IllegalStateException(
-                    "Patch directory does not exist: " + dir.getAbsolutePath()
+                    "Patch directory does not exist: "
+                            + dir.getAbsolutePath()
             );
         }
 
@@ -34,9 +40,9 @@ public class Main {
                 .map(File::getAbsoluteFile)
                 .toList();
 
-        var list = PatchParser.parsePatches(files.toArray(new File[0]), c);
+        var components = PatchParser.parsePatches(files.toArray(new File[0]), reducedConfig);
 
-        ChangelogBuilder.build(list);
+        ChangelogBuilder.build(config, components);
 
         files.forEach(f -> {
             try {
@@ -46,5 +52,4 @@ public class Main {
             }
         });
     }
-
 }
