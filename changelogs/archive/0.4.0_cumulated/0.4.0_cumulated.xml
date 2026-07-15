@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<changelog>
+    <topic name="default">
+        <component ref="config-parser">
+            <category name="additions">
+                <breaking severity="major">
+                    <entry>reusable hierarchical component definitions</entry>
+                    <entry>configurable changelog topics referencing components</entry>
+                </breaking>
+                <entry>config schema version 3 (config.v3.dtd) with components and component-ref-based topics</entry>
+                <entry>config schema validation (config.v3.xsd) with maximum topic and component depth validation</entry>
+            </category>
+            <category name="refactorings">
+                <entry>configuration parser to support reusable components and topic views</entry>
+                <entry>integration of XSD validation into version 3 configuration parsing</entry>
+                <entry>backwards compatibility with configuration versions 1 and 2, mapping legacy topic entries onto a synthetic default component/topic pair</entry>
+                <entry>module exports to expose the config model package</entry>
+            </category>
+        </component>
+        <component ref="markdown">
+            <category name="additions">
+                <entry>rendering of nested component hierarchies as progressively deeper markdown headers</entry>
+                <entry>support for an unlabeled "default" topic whose components render without a top-level topic header</entry>
+            </category>
+            <category name="refactorings">
+                <entry>markdown builder to walk configured topics and their component trees rather than a flat topic list</entry>
+                <entry>changelog parser to validate topic and component references against the component-aware config, dropping the old per-topic category count limit</entry>
+            </category>
+        </component>
+        <component ref="patches">
+            <category name="additions">
+                <breaking severity="major">
+                    <entry>component-based patch format (v2) replacing topic-based patches</entry>
+                </breaking>
+                <entry>patch.v2.dtd schema for the new component element</entry>
+            </category>
+            <category name="refactorings">
+                <entry>patch parser to the new component model</entry>
+                <entry>backwards compatibility with version 1 patch files, now resolving against configured components instead of topics</entry>
+                <entry>changelog builder to assemble output from configured topics and their referenced components, including nested component XML elements</entry>
+                <entry>reduced config to expose component identifiers in place of raw topic values</entry>
+                <entry>main entry point to load the full config so component-based processing has access to topic/component definitions</entry>
+            </category>
+        </component>
+        <component ref="versioning">
+            <category name="removals">
+                <entry>unused POMParser utility class</entry>
+            </category>
+        </component>
+        <component ref="xml-model">
+            <category name="refactorings">
+                <entry>XML model by replacing XmlTopic with XmlComponent, keyed by hierarchical path instead of name</entry>
+                <entry>XML constants to match the component-based patch schema</entry>
+            </category>
+            <category name="additions">
+                <entry>XmlPatch record representing a full parsed patch as a list of components</entry>
+            </category>
+        </component>
+    </topic>
+</changelog>
