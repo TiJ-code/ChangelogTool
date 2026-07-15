@@ -64,10 +64,9 @@ public final class ChangelogParser {
     }
 
     private static List<XmlComponent> parseTopics(Element root, Config config) {
-        List<XmlComponent> topics = new ArrayList<>();
+        List<XmlComponent> parsedComponents = new ArrayList<>();
 
         NodeList topicNodes = root.getChildNodes();
-
         Set<String> usedTopicNames = new HashSet<>();
 
         for (int i = 0; i < topicNodes.getLength(); i++) {
@@ -85,7 +84,10 @@ public final class ChangelogParser {
 
             String topicName = topicElement.getAttribute(ATTRIBUTE_TOPIC_NAME);
 
-            if (!config.topics().contains(topicName)) {
+            boolean isValidTopic = config.topics().stream()
+                    .anyMatch(t -> t.name().equals(topicName));
+
+            if (!isValidTopic) {
                 throw new RuntimeException("Invalid topic: " + topicName);
             }
 
@@ -93,22 +95,43 @@ public final class ChangelogParser {
                 throw new RuntimeException("Duplicate topic: " + topicName);
             }
 
-            topics.add(new XmlComponent(topicName, parseCategories(topicElement, config)));
+            NodeList componentNodes = topicElement.getChildNodes();
+            for (int j = 0; j < componentNodes.getLength(); j++) {
+                var compNode = componentNodes.item(j);
+
+                if (compNode.getNodeType() != Node.ELEMENT_NODE)
+                    continue;
+
+                var compElement = (Element) compNode;
+
+                if (!compElement.getTagName().equals(TAG_COMPONENT))
+                    continue;
+
+                validateAttributeExists(compElement, ATTRIBUTE_COMPONENT_REF);
+                String compRef = compElement.getAttribute(ATTRIBUTE_COMPONENT_REF);
+
+                if (!config.components().containsKey(compRef)) {
+                    throw new RuntimeException("Invalid component %s: %s".formatted(ATTRIBUTE_COMPONENT_REF, compRef));
+                }
+
+                parsedComponents.add(
+                        new XmlComponent(
+                                compRef,
+                                parseCategories(compElement, config)
+                        )
+                );
+            }
         }
 
-        if (topics.size() > config.topics().size()) {
-            throw new RuntimeException("Too many topics");
-        }
-
-        return topics;
+        return parsedComponents;
     }
 
-    private static List<XmlCategory> parseCategories(Element topicElement, Config config) {
+    private static List<XmlCategory> parseCategories(Element parentElement, Config config) {
         List<XmlCategory> categories = new ArrayList<>();
 
         Set<String> usedCategoryNames = new HashSet<>();
 
-        NodeList categoryNodes = topicElement.getChildNodes();
+        NodeList categoryNodes = parentElement.getChildNodes();
 
         for (int i = 0; i < categoryNodes.getLength(); i++) {
             var node = categoryNodes.item(i);
@@ -148,15 +171,6 @@ public final class ChangelogParser {
                             categoryName,
                             parseBreakings(categoryElement, config),
                             parseTopLevelEntries(categoryElement)
-                    )
-            );
-        }
-
-        if (categories.size() > config.categories().size()) {
-            throw new RuntimeException(
-                    "Too many categories in topic: "
-                            + topicElement.getAttribute(
-                            ATTRIBUTE_TOPIC_NAME
                     )
             );
         }
