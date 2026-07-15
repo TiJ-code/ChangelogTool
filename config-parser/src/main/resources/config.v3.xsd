@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- Root Element -->
+    <xs:element name="config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="versioning" type="VersioningType" minOccurs="0" />
+                <xs:element name="categories" type="CategoriesType" minOccurs="0" />
+                <xs:element name="components" type="ComponentsType" minOccurs="0" />
+                <xs:element name="topics" type="TopicsType" minOccurs="0" />
+                <xs:element name="breaking.changes" type="BreakingChangesType" minOccurs="0" />
+            </xs:sequence>
+            <xs:attribute name="version" type="xs:string" fixed="3" use="required" />
+
+            <xs:anyAttribute namespace="http://www.w3.org/2001/XMLSchema-instance" processContents="skip"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Versioning -->
+    <xs:complexType name="VersioningType">
+        <xs:sequence>
+            <xs:element name="rule" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="filename">
+                            <xs:complexType>
+                                <xs:attribute name="regex" type="xs:string" use="required" />
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="version">
+                            <xs:complexType>
+                                <xs:attribute name="regex" type="xs:string" use="required" />
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="name" type="xs:string" />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Categories -->
+    <xs:complexType name="CategoriesType">
+        <xs:sequence>
+            <xs:element name="category" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="name" type="xs:string" use="required" />
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Components (recursive) -->
+    <xs:complexType name="ComponentsType">
+        <xs:sequence>
+            <xs:element name="component" type="ComponentType" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ComponentType">
+        <xs:sequence>
+            <xs:element name="component" type="ComponentType" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+
+    <!-- Topics (recursive) -->
+    <xs:complexType name="TopicsType">
+        <xs:sequence>
+            <xs:element name="topic" type="TopicType" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TopicType">
+        <xs:sequence>
+            <xs:element name="component-ref" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="ref" type="xs:string" use="required" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="topic" type="TopicType" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <!-- Breaking Changes -->
+    <xs:complexType name="BreakingChangesType">
+        <xs:sequence>
+            <xs:element name="entry" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
