@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v2.dtd">
+<patch version="2">
+    <component ref="patches">
+        <category name="refactorings">
+            <entry>patch template to version 2</entry>
+        </category>
+    </component>
+</patch>
