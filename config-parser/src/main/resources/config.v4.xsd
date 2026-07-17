@@ -45,6 +45,14 @@
                         <xs:element name="phase" type="PhaseType" minOccurs="1" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
+                <xs:key name="phaseNames">
+                    <xs:selector xpath="phase"/>
+                    <xs:field xpath="@name"/>
+                </xs:key>
+                <xs:keyref name="nextPhaseMustExist" refer="phaseNames">
+                    <xs:selector xpath="phase/next"/>
+                    <xs:field xpath="."/>
+                </xs:keyref>
             </xs:element>
         </xs:sequence>
     </xs:complexType>

@@ -7,8 +7,17 @@
         </rule>
         <phases>
             <phase name="release">
-                <next/>
-                <formatter>{#numeric_version}</formatter>
+                <next>release</next>
+                <prefix>alarm</prefix>
+                <suffix>im</suffix>
+                <formatter>{#prefix}-{#numeric_version}-{#}</formatter>
+                <events>
+                    <event on="phase_entered">
+                        <major>0</major>
+                        <minor>1</minor>
+                        <patch>2</patch>
+                    </event>
+                </events>
             </phase>
         </phases>
     </versioning>

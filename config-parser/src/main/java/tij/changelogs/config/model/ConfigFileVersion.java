@@ -9,6 +9,7 @@ import tij.changelogs.config.parser.versions.ConfigParserV3;
 import java.util.function.Function;
 
 public enum ConfigFileVersion {
+    v4("4", ConfigParserV4::parse),
     v3("3", ConfigParserV3::parse),
     v2("2", ConfigParserV2::parse),
     v1("1", ConfigParserV1::parse);
