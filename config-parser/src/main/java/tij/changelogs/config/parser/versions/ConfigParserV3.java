@@ -25,6 +25,10 @@ public final class ConfigParserV3 {
             throw new RuntimeException("Invalid configuration file: " + e.getMessage(), e);
         }
 
+        return parseDocument(doc);
+    }
+
+    public static Config parseDocument(Document doc) {
         Element root = doc.getDocumentElement();
 
         VersioningConfig versioning = VersioningParser.parse(root);
@@ -46,7 +50,6 @@ public final class ConfigParserV3 {
                 breakingLevels
         );
     }
-
 
     private static Map<String, String> parseCategories(Element root) {
         Map<String, String> categories = new HashMap<>();
