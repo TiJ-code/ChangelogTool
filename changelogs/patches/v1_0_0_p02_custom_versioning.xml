@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v2.dtd">
+<patch version="2">
+    <component ref="config-parser">
+        <category name="additions">
+            <breaking severity="major">
+                <entry>config schema validation 4 (config.v4.xsd) with custom versioning phases</entry>
+            </breaking>
+        </category>
+    </component>
+</patch>

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE config SYSTEM "config.v3.dtd">
-<config version="3">
+<config version="4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="config.v4.xsd">
     <versioning>
         <rule name="maven">
             <filename regex=".*/?pom\.xml"/>
             <version regex="&lt;version&gt;([^&lt;]+)&lt;/version&gt;"/>
         </rule>
+        <phases>
+            <phase name="release">
+                <next/>
+                <formatter>{#numeric_version}</formatter>
+            </phase>
+        </phases>
     </versioning>
     <categories>
         <category name="additions">added</category>
