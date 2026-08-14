@@ -7,7 +7,7 @@
         </rule>
         <phases>
             <phase name="release">
-                <next/>
+                <next>release</next>
                 <formatter>{#numeric_version}</formatter>
             </phase>
         </phases>

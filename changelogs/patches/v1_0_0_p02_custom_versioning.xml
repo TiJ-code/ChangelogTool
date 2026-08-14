@@ -5,7 +5,9 @@
         <category name="additions">
             <breaking severity="major">
                 <entry>config schema validation 4 (config.v4.xsd) with custom versioning phases</entry>
+                <entry>config schema parsing for version 4</entry>
             </breaking>
+            <entry>config version 4 phase model config classes</entry>
         </category>
     </component>
 </patch>

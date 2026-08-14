@@ -1,19 +1,9 @@
 package tij.changelogs.config.parser.versions;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigValidator;
-import tij.changelogs.config.model.ComponentConfig;
-import tij.changelogs.config.model.TopicConfig;
-import tij.changelogs.config.model.VersioningConfig;
-import tij.changelogs.config.parser.VersioningParser;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import tij.changelogs.config.model.ConfigFileVersion;
 
 public final class ConfigParserV4 {
     private ConfigParserV4() {}
@@ -25,6 +15,6 @@ public final class ConfigParserV4 {
             throw new RuntimeException("Invalid configuration file: " + e.getMessage(), e);
         }
 
-        return ConfigParserV3.parseDocument(doc);
+        return ConfigParserV3.parseDocument(doc, ConfigFileVersion.v4);
     }
 }
