@@ -32,6 +32,8 @@ public final class VersioningParser {
 
     private static final String ATTR__REGEX = "regex";
     private static final String ATTR__PHASE__NAME = "name";
+    private static final String ATTR__PHASES__INITIAL = "initial";
+    private static final String ATTR__PHASES__RELEASE = "release";
     private static final String ATTR__EVENT__ON = "on";
 
     public static final String TEMPLATE__NUMERIC_VERSION = "{#numeric_version}";
@@ -96,7 +98,15 @@ public final class VersioningParser {
             List<VersioningRule> rules = parseRules(versioningElement);
             List<VersioningPhase> phases = parsePhases(versioningElement);
 
-            return new VersioningConfig(rules, phases);
+            Element phasesElement = (Element) versioningElement.getElementsByTagName(TAG_PHASES).item(0);
+            Optional<String> initial = phasesElement == null
+                    ? Optional.empty()
+                    : optionalAttribute(phasesElement, ATTR__PHASES__INITIAL);
+            Optional<String> release = phasesElement == null
+                    ? Optional.empty()
+                    : optionalAttribute(phasesElement, ATTR__PHASES__RELEASE);
+
+            return new VersioningConfig(rules, phases, initial, release);
         }
 
         private static List<VersioningRule> parseRules(Element versioningElement) {
@@ -245,6 +255,11 @@ public final class VersioningParser {
             return value == null || value.isBlank()
                     ? OptionalInt.empty()
                     : OptionalInt.of(Integer.parseInt(value));
+        }
+
+        private static Optional<String> optionalAttribute(Element element, String name) {
+            String value = element.getAttribute(name).trim();
+            return value.isEmpty() ? Optional.empty() : Optional.of(value);
         }
     }
 }

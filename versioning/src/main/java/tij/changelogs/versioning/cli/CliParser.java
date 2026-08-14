@@ -21,7 +21,7 @@ public final class CliParser {
 
     private static CliArguments usage(String message) {
         System.err.println(message);
-        System.err.println("Commands: --show, --increment <major|minor|patch>, --next-phase, --phase <name>");
+        System.err.println("Commands: --show, --release, --increment <major|minor|patch>, --next-phase, --phase <name>");
         return null;
     }
 }
