@@ -4,6 +4,18 @@ Changelog Tool is a modular Java toolchain for collecting XML changelog patches,
 
 The project is configuration-driven. Project-specific details such as version files, version formats, phases, components, categories, topics, and breaking-change levels belong in the XML configuration rather than in Java code.
 
+## Versioning policy
+
+The project follows the [Semantic Versioning 2.0.0](https://semver.org/) standard for stable releases, starting with `1.0.0`.
+
+For versions at or above `1.0.0`:
+
+- A major version indicates incompatible or breaking changes.
+- A minor version adds backward-compatible functionality.
+- A patch version contains backward-compatible fixes.
+
+Before `1.0.0`, the public API and behavior are not considered stable. Breaking changes may occur in minor increments, and compatibility with earlier pre-`1.0.0` versions is not guaranteed. Reaching `1.0.0` establishes the first stable compatibility baseline.
+
 ## Requirements
 
 - Java 25
