@@ -8,6 +8,24 @@
                 <entry>config schema parsing for version 4</entry>
             </breaking>
             <entry>config version 4 phase model config classes</entry>
+            <entry>phase formatter support, including configurable prefix and suffix placeholders</entry>
+            <entry>validation and parsing of optional phase transition event values</entry>
+        </category>
+    </component>
+    <component ref="versioning">
+        <category name="refactorings">
+            <breaking severity="major">
+                <entry>configuration-driven version sources, phases, formatters, and version operations</entry>
+                <entry>versioning CLI commands now operate through generic configured operations</entry>
+            </breaking>
+            <entry>version source resolution across all configured files with version consistency validation</entry>
+            <entry>version change-set planning before applying file modifications</entry>
+            <entry>shared versioning-model module for passing version values between tools</entry>
+        </category>
+        <category name="additions">
+            <entry>configurable numeric version increments and phase transitions</entry>
+            <entry>configurable version formatter placeholders</entry>
+            <entry>versioning subsystem tests for formatters, sources, consistency, and change application</entry>
         </category>
     </component>
 </patch>
