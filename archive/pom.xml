@@ -24,6 +24,11 @@
             <artifactId>config-parser</artifactId>
             <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>tij.changelogs</groupId>
+            <artifactId>versioning</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
