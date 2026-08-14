@@ -55,7 +55,7 @@ jobs:
 
       - name: Archive Changelog Files
         shell: bash
-        run: ./ChangelogArchiver.tool
+        run: ./ChangelogArchiver.tool config_changelog_tool.xml
 
       - name: Get Version
         id: version
