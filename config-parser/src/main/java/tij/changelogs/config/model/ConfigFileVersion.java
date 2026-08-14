@@ -5,6 +5,7 @@ import tij.changelogs.config.Config;
 import tij.changelogs.config.parser.versions.ConfigParserV1;
 import tij.changelogs.config.parser.versions.ConfigParserV2;
 import tij.changelogs.config.parser.versions.ConfigParserV3;
+import tij.changelogs.config.parser.versions.ConfigParserV4;
 
 import java.util.function.Function;
 

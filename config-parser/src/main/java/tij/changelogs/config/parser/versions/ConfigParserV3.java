@@ -6,6 +6,7 @@ import org.w3c.dom.NodeList;
 import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigValidator;
 import tij.changelogs.config.model.ComponentConfig;
+import tij.changelogs.config.model.ConfigFileVersion;
 import tij.changelogs.config.model.TopicConfig;
 import tij.changelogs.config.model.VersioningConfig;
 import tij.changelogs.config.parser.VersioningParser;
@@ -29,9 +30,13 @@ public final class ConfigParserV3 {
     }
 
     public static Config parseDocument(Document doc) {
+        return parseDocument(doc, ConfigFileVersion.v3);
+    }
+
+    public static Config parseDocument(Document doc, ConfigFileVersion version) {
         Element root = doc.getDocumentElement();
 
-        VersioningConfig versioning = VersioningParser.parse(root);
+        VersioningConfig versioning = VersioningParser.parse(root, version);
 
         Map<String, String> categories = parseCategories(root);
 

@@ -40,6 +40,10 @@ public final class VersioningParser {
 
     private VersioningParser() {}
 
+    public static VersioningConfig parse(Element root) {
+        return VersioningParserV1.parse(root);
+    }
+
     public static VersioningConfig parse(Element root, ConfigFileVersion configFileVersion) {
         return switch (configFileVersion) {
             case ConfigFileVersion.v3 -> VersioningParserV1.parse(root);
@@ -206,15 +210,11 @@ public final class VersioningParser {
                 String trigger = eventElement.getAttribute(ATTR__EVENT__ON);
                 VersioningEventType vet = VersioningEventType.valueOf(trigger.toUpperCase());
 
-                Integer major = getIntOrDefault(eventElement, TAG_MAJOR, null);
-                Integer minor = getIntOrDefault(eventElement, TAG_MINOR, null);
-                Integer patch = getIntOrDefault(eventElement, TAG_PATCH, null);
-
                 events.add(new VersioningEvent(
                         vet,
-                        OptionalInt.of(major),
-                        OptionalInt.of(minor),
-                        OptionalInt.of(patch)
+                        getOptionalInt(eventElement, TAG_MAJOR),
+                        getOptionalInt(eventElement, TAG_MINOR),
+                        getOptionalInt(eventElement, TAG_PATCH)
                 ));
             }
 
@@ -227,7 +227,8 @@ public final class VersioningParser {
             if (element == null)
                 return null;
 
-            return element.getTextContent().trim();
+            String value = element.getTextContent().trim();
+            return value.isEmpty() ? null : value;
         }
 
         private static String getOptionalTextContent(Element parent, String tag) {
@@ -239,13 +240,11 @@ public final class VersioningParser {
             return element.getTextContent().trim();
         }
 
-        private static Integer getIntOrDefault(Element parent, String tag, Integer defaultValue) {
+        private static OptionalInt getOptionalInt(Element parent, String tag) {
             String value = getOptionalTextContent(parent, tag);
-
-            if (value == null || value.isBlank())
-                return defaultValue;
-
-            return Integer.parseInt(value);
+            return value == null || value.isBlank()
+                    ? OptionalInt.empty()
+                    : OptionalInt.of(Integer.parseInt(value));
         }
     }
 }

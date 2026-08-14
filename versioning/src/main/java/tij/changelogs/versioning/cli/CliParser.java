@@ -1,71 +1,27 @@
 package tij.changelogs.versioning.cli;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
 public final class CliParser {
-
     private CliParser() {}
 
-
     public static CliArguments parse(String[] args) {
-        if (args.length < 2) {
-            printUsage();
-            return null;
-        }
-
-        Path configFilePath = Path.of(args[0]);
-
+        if (args.length < 2) return usage("Usage: versioning <config> <command> [value]");
+        Path config = Path.of(args[0]);
         CliCommand command = Arrays.stream(CliCommand.values())
-                .filter(c -> c.getArgument().equals(args[1]))
-                .findFirst()
-                .orElse(null);
+                .filter(candidate -> candidate.getArgument().equals(args[1]))
+                .findFirst().orElse(null);
+        if (command == null) return usage("Unknown command: " + args[1]);
 
-        if (command == null) {
-            System.err.println("Unknown command: " + args[1]);
-            printUsage();
-            return null;
-        }
-
-        int expectedArgs = 2 + command.getFollowingArguments();
-
-        if (args.length != expectedArgs) {
-            System.err.printf("Command '%s' expects %d parameter(s).%n",
-                    command.getArgument(),
-                    command.getFollowingArguments()
-            );
-
-            System.err.println("Usage: " + command);
-
-            return null;
-        }
-
-        return switch (command) {
-            case STAGE -> {
-                try {
-                    yield new CliArguments(
-                            configFilePath,
-                            command,
-                            StageType.valueOf(
-                                    args[2].toUpperCase()
-                            )
-                    );
-                } catch (IllegalArgumentException ex) {
-                    System.err.println("Invalid stage type. Expected: " + Arrays.toString(StageType.values()));
-                    yield null;
-                }
-            }
-
-            default -> new CliArguments(configFilePath, command, null);
-        };
+        int expected = 2 + command.getFollowingArguments();
+        if (args.length != expected) return usage(command.getArgument() + " expects " + command.getFollowingArguments() + " parameter(s)");
+        return new CliArguments(config, command, command.getFollowingArguments() == 1 ? args[2] : null);
     }
 
-
-    private static void printUsage() {
-        System.err.println("Usage: versioning <config> <command>");
-
-        Arrays.stream(CliCommand.values())
-                .forEach(cmd -> System.err.println("  " + cmd));
+    private static CliArguments usage(String message) {
+        System.err.println(message);
+        System.err.println("Commands: --show, --increment <major|minor|patch>, --next-phase, --phase <name>");
+        return null;
     }
 }
