@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v2.dtd">
+<patch version="2">
+    <component ref="versioning">
+        <category name="additions">
+            <entry>independent snapshot state for unreleased versions within a development phase</entry>
+            <entry>configuration-driven development channels such as prealpha, alpha, beta, and early access</entry>
+            <entry>phase formatter support for channel-prefixed versions such as alpha-1.1.0-SNAPSHOT</entry>
+            <entry>phase-entry events that can reset numeric versions when promoting to a new channel</entry>
+        </category>
+        <category name="refactorings">
+            <entry>numeric increments now return to the configured initial development phase as snapshots</entry>
+            <entry>release operations now clear snapshot state without changing the numeric version or development channel</entry>
+            <entry>next-phase operations now apply configured phase transitions and entry events</entry>
+        </category>
+    </component>
+    <component ref="config-parser">
+        <category name="additions">
+            <entry>configuration support for initial and release phase roles</entry>
+        </category>
+    </component>
+</patch>

@@ -47,6 +47,12 @@ public final class ConfiguredVersionFormatter implements VersionFormatter {
     private static Version parseGeneric(String value) {
         var matcher = java.util.regex.Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)(?:-([A-Za-z0-9][A-Za-z0-9.-]*))?$").matcher(value);
         if (!matcher.matches()) throw new IllegalArgumentException("Invalid numeric version: " + value);
-        return new Version(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), matcher.group(4));
+        String suffix = matcher.group(4);
+        return new Version(
+                Integer.parseInt(matcher.group(1)),
+                Integer.parseInt(matcher.group(2)),
+                Integer.parseInt(matcher.group(3)),
+                "SNAPSHOT".equals(suffix) ? null : suffix,
+                "SNAPSHOT".equals(suffix));
     }
 }

@@ -5,10 +5,10 @@
             <filename regex=".*/?pom\.xml"/>
             <version regex="&lt;version&gt;([^&lt;]+)&lt;/version&gt;"/>
         </rule>
-        <phases>
+        <phases initial="release" release="release">
             <phase name="release">
                 <next>release</next>
-                <formatter>{#numeric_version}</formatter>
+                <formatter>{#numeric_version}{#snapshot}</formatter>
             </phase>
         </phases>
     </versioning>

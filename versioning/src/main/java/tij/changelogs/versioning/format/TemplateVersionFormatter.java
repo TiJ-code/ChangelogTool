@@ -15,6 +15,7 @@ public final class TemplateVersionFormatter implements VersionFormatter {
     private static final String PHASE = "{#phase}";
     private static final String PREFIX = "{#prefix}";
     private static final String SUFFIX = "{#suffix}";
+    private static final String SNAPSHOT = "{#snapshot}";
 
     private final String template;
     private final String phase;
@@ -46,7 +47,8 @@ public final class TemplateVersionFormatter implements VersionFormatter {
                 .replace(PATCH, Integer.toString(version.patch()))
                 .replace(PHASE, Objects.toString(version.phase(), ""))
                 .replace(PREFIX, prefix)
-                .replace(SUFFIX, suffix);
+                .replace(SUFFIX, suffix)
+                .replace(SNAPSHOT, version.snapshot() ? "-SNAPSHOT" : "");
         if (result.contains("{#")) {
             throw new IllegalArgumentException("Unknown version formatter placeholder in '" + template + "'");
         }
@@ -63,7 +65,8 @@ public final class TemplateVersionFormatter implements VersionFormatter {
                 Integer.parseInt(matcher.group("major")),
                 Integer.parseInt(matcher.group("minor")),
                 Integer.parseInt(matcher.group("patch")),
-                phase
+                phase,
+                value.endsWith("-SNAPSHOT")
         );
     }
 
@@ -80,6 +83,7 @@ public final class TemplateVersionFormatter implements VersionFormatter {
                     case PHASE -> regex.append(Pattern.quote(valuePhasePlaceholder()));
                     case PREFIX -> regex.append(Pattern.quote(prefix));
                     case SUFFIX -> regex.append(Pattern.quote(suffix));
+                    case SNAPSHOT -> regex.append("(?:-SNAPSHOT)?");
                     default -> throw new IllegalArgumentException("Unknown version formatter placeholder: " + placeholder);
                 }
                 i += placeholder.length();
@@ -91,7 +95,7 @@ public final class TemplateVersionFormatter implements VersionFormatter {
     }
 
     private static String placeholderAt(String value, int offset) {
-        for (String candidate : new String[]{NUMERIC, MAJOR, MINOR, PATCH, PHASE, PREFIX, SUFFIX}) {
+        for (String candidate : new String[]{NUMERIC, MAJOR, MINOR, PATCH, PHASE, PREFIX, SUFFIX, SNAPSHOT}) {
             if (value.startsWith(candidate, offset)) return candidate;
         }
         return null;

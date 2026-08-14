@@ -3,6 +3,7 @@ package tij.changelogs.versioning;
 import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigSystem;
 import tij.changelogs.config.model.VersioningPhase;
+import tij.changelogs.config.model.VersioningConfig;
 import tij.changelogs.config.model.VersioningRule;
 import tij.changelogs.versioning.cli.CliArguments;
 import tij.changelogs.versioning.cli.CliCommand;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 public final class Main {
     private Main() {}
@@ -48,31 +50,39 @@ public final class Main {
             return;
         }
 
-        VersionOperation operation = operation(arguments, phases);
+        VersionOperation operation = operation(arguments, config.versioningConfig());
         VersionChangeSet changes = manager.plan(current, operation);
         manager.apply(changes);
     }
 
-    private static VersionOperation operation(CliArguments arguments, List<VersioningPhase> phases) {
+    private static VersionOperation operation(CliArguments arguments, VersioningConfig versioning) {
         return switch (arguments.command()) {
-            case INCREMENT -> switch (arguments.value().toLowerCase(Locale.ROOT)) {
-                case "major" -> new IncrementMajorOperation();
-                case "minor" -> new IncrementMinorOperation();
-                case "patch" -> new IncrementPatchOperation();
-                default -> throw new IllegalArgumentException("Unknown increment: " + arguments.value());
-            };
+            case RELEASE -> current -> current.withSnapshot(false);
+            case INCREMENT -> {
+                VersionOperation increment = switch (arguments.value().toLowerCase(Locale.ROOT)) {
+                    case "major" -> new IncrementMajorOperation();
+                    case "minor" -> new IncrementMinorOperation();
+                    case "patch" -> new IncrementPatchOperation();
+                    default -> throw new IllegalArgumentException("Unknown increment: " + arguments.value());
+                };
+                yield current -> increment.apply(current).withPhase(configuredInitialPhase(versioning, current.phase()));
+            }
             case NEXT_PHASE -> {
-                HashMap<String, String> next = new HashMap<>();
-                for (VersioningPhase phase : phases) phase.nextPhaseName().ifPresent(value -> next.put(phase.name(), value));
-                yield new NextPhaseOperation(next);
+                HashMap<String, VersioningPhase> phases = new HashMap<>();
+                for (VersioningPhase phase : versioning.versionPhases()) phases.put(phase.name(), phase);
+                yield new NextPhaseOperation(phases);
             }
             case PHASE -> {
-                if (phases.stream().noneMatch(phase -> phase.name().equals(arguments.value()))) {
+                if (versioning.versionPhases().stream().noneMatch(phase -> phase.name().equals(arguments.value()))) {
                     throw new IllegalArgumentException("Unknown configured phase: " + arguments.value());
                 }
                 yield new SetPhaseOperation(arguments.value());
             }
             case SHOW -> throw new IllegalStateException("SHOW does not have an operation");
         };
+    }
+
+    private static String configuredInitialPhase(VersioningConfig versioning, String currentPhase) {
+        return versioning.initialPhaseName().orElse(currentPhase);
     }
 }
