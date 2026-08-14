@@ -1,12 +1,10 @@
 package tij.changelogs.versioning.cli;
 
-import java.util.StringJoiner;
-
 public enum CliCommand {
-    RELEASE("--release", 0),
-    STAGE("--stage", 1),
-    SUFFIX("--suffix", 0),
-    STRING("--string", 0);
+    SHOW("--show", 0),
+    INCREMENT("--increment", 1),
+    NEXT_PHASE("--next-phase", 0),
+    PHASE("--phase", 1);
 
     private final String argument;
     private final int followingArguments;
@@ -16,23 +14,6 @@ public enum CliCommand {
         this.followingArguments = followingArguments;
     }
 
-    public String getArgument() {
-        return argument;
-    }
-
-    public int getFollowingArguments() {
-        return followingArguments;
-    }
-
-    @Override
-    public String toString() {
-        if (followingArguments == 0)
-            return argument;
-
-        StringJoiner s = new StringJoiner(" ");
-        s.add(argument);
-        for (int i = 0; i < followingArguments; i++)
-            s.add("{%d}".formatted(i));
-        return s.toString();
-    }
+    public String getArgument() { return argument; }
+    public int getFollowingArguments() { return followingArguments; }
 }
