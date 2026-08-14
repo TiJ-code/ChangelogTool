@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE patch SYSTEM "patch.v2.dtd">
+<patch version="2">
+    <component ref="archive">
+        <category name="refactorings">
+            <breaking severity="major">
+                <entry>archive workflow now requires the versioning configuration file</entry>
+            </breaking>
+            <entry>archive output is organized by configured phase when multiple phases exist</entry>
+            <entry>archive module now consumes the shared versioning model and configured version formatter</entry>
+        </category>
+        <category name="additions">
+            <entry>phase-aware archive directories for versioned changelogs</entry>
+            <entry>direct version archive directories for single-phase configurations</entry>
+        </category>
+    </component>
+</patch>
