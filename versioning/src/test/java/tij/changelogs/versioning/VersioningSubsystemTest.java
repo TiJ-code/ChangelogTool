@@ -1,4 +1,5 @@
 package tij.changelogs.versioning;
+
 import tij.changelogs.versioning.model.Version;
 
 import org.junit.jupiter.api.Test;
@@ -22,14 +23,14 @@ class VersioningSubsystemTest {
     @Test
     void formatterRecognizesConfiguredPhaseAndRendersIt() {
         var phases = List.of(
-                phase("snapshot", "{#numeric_version}-SNAPSHOT", "release"),
-                phase("release", "{#numeric_version}", "release")
+                phase("alpha", "alpha-{#numeric_version}{#snapshot}", "beta"),
+                phase("release", "{#numeric_version}{#snapshot}", "alpha")
         );
         var formatter = new ConfiguredVersionFormatter(phases);
 
-        Version parsed = formatter.parse("1.4.0-SNAPSHOT");
+        Version parsed = formatter.parse("alpha-1.4.0-SNAPSHOT");
 
-        assertEquals(new Version(1, 4, 0, "snapshot"), parsed);
+        assertEquals(new Version(1, 4, 0, "alpha", true), parsed);
         assertEquals("1.4.0", formatter.format(new Version(1, 4, 0, "release")));
     }
 

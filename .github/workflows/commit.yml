@@ -62,8 +62,8 @@ jobs:
 
       - name: Bump
         run: |
-          ./ChangelogVersioning.tool config_changelog_tool.xml --stage ${{ github.event.inputs.bump }}
-          ./ChangelogVersioning.tool config_changelog_tool.xml --suffix
+          CONFIG=config_changelog_tool.xml
+          ./ChangelogVersioning.tool "$CONFIG" --increment ${{ github.event.inputs.bump }}
 
       - name: Commit
         run: |
