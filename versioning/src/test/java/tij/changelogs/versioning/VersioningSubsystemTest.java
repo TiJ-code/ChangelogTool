@@ -10,7 +10,7 @@ import tij.changelogs.versioning.operation.IncrementMinorOperation;
 import tij.changelogs.versioning.resolver.VersionSourceResolver;
 import tij.changelogs.versioning.service.VersionManager;
 import tij.changelogs.versioning.source.RegexVersionSource;
-import tij.changelogs.versioning.source.VersionSource;
+import tij.changelogs.versioning.source.IVersionSource;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,7 +54,7 @@ class VersioningSubsystemTest {
         Files.writeString(second, "version=1.2.4");
         var formatter = new ConfiguredVersionFormatter(List.of());
         var rule = new VersioningRule(".*\\.txt", "version=([^\\n]+)");
-        List<VersionSource> sources = List.of(
+        List<IVersionSource> sources = List.of(
                 new RegexVersionSource(rule, formatter),
                 new RegexVersionSource(rule, formatter)
         );

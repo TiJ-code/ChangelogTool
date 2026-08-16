@@ -1,7 +1,7 @@
 package tij.changelogs.versioning.resolver;
 
 import tij.changelogs.versioning.source.VersionLocation;
-import tij.changelogs.versioning.source.VersionSource;
+import tij.changelogs.versioning.source.IVersionSource;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 
 public final class VersionSourceResolver {
     private final File root;
-    private final List<VersionSource> sources;
+    private final List<IVersionSource> sources;
 
-    public VersionSourceResolver(File root, List<VersionSource> sources) {
+    public VersionSourceResolver(File root, List<IVersionSource> sources) {
         this.root = root;
         this.sources = List.copyOf(sources);
     }

@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 /** Formatter for the placeholders documented by the configuration schema. */
-public final class TemplateVersionFormatter implements VersionFormatter {
+public final class TemplateVersionFormatter implements IVersionFormatter {
     private static final String NUMERIC = "{#numeric_version}";
     private static final String MAJOR = "{#major}";
     private static final String MINOR = "{#minor}";

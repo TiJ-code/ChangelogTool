@@ -121,10 +121,7 @@ public final class PatchParser {
         return null;
     }
 
-    private static PatchFileVersion parseVersionWithoutDtd(
-            File file
-    ) {
-
+    private static PatchFileVersion parseVersionWithoutDtd(File file) {
         try {
             var factory = DocumentBuilderFactory.newInstance();
 

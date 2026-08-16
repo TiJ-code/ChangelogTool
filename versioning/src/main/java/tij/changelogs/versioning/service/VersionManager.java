@@ -3,7 +3,7 @@ package tij.changelogs.versioning.service;
 import tij.changelogs.versioning.model.Version;
 import tij.changelogs.versioning.change.VersionChange;
 import tij.changelogs.versioning.change.VersionChangeSet;
-import tij.changelogs.versioning.operation.VersionOperation;
+import tij.changelogs.versioning.operation.IVersionOperation;
 import tij.changelogs.versioning.resolver.ResolvedVersion;
 import tij.changelogs.versioning.resolver.VersionSourceResolver;
 import tij.changelogs.versioning.source.VersionLocation;
@@ -33,7 +33,7 @@ public final class VersionManager {
         return new ResolvedVersion(expected, locations);
     }
 
-    public VersionChangeSet plan(ResolvedVersion current, VersionOperation operation) {
+    public VersionChangeSet plan(ResolvedVersion current, IVersionOperation operation) {
         Version next = operation.apply(current.version());
         List<VersionChange> changes = current.locations().stream().map(location -> {
             try {

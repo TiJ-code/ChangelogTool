@@ -5,12 +5,13 @@ import tij.changelogs.config.Config;
 import tij.changelogs.config.model.ConfigFileVersion;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class ConfigParser {
-
     private ConfigParser() {}
 
     public static Config parse(Path path) {
@@ -31,12 +32,12 @@ public final class ConfigParser {
     }
 
     private static byte[] loadConfig(Path path) throws IOException {
+        String resourceName = path.toString().replace('\\', '/');
+        while (resourceName.startsWith("/")) {
+            resourceName = resourceName.substring(1);
+        }
 
-        String normalized = path.toString().replace("\\", "/");
-
-        try (InputStream resource =
-                ConfigParser.class.getClassLoader()
-                        .getResourceAsStream(normalized)) {
+        try (InputStream resource = ConfigParser.class.getClassLoader().getResourceAsStream(resourceName)) {
 
             if (resource != null) {
                 return resource.readAllBytes();
@@ -46,11 +47,7 @@ public final class ConfigParser {
         }
     }
 
-    private static Config parseWithXsd(
-            InputStream is,
-            ConfigFileVersion fv
-    ) {
-
+    private static Config parseWithXsd(InputStream is, ConfigFileVersion fv) {
         try {
             var factory = DocumentBuilderFactory.newInstance();
 
@@ -72,10 +69,7 @@ public final class ConfigParser {
         }
     }
 
-    private static ConfigFileVersion parseVersionWithoutDtd(
-            InputStream is
-    ) {
-
+    private static ConfigFileVersion parseVersionWithoutDtd(InputStream is) {
         try {
             var factory = DocumentBuilderFactory.newInstance();
 
@@ -105,5 +99,4 @@ public final class ConfigParser {
             );
         }
     }
-
 }
