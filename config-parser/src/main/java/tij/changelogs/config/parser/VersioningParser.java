@@ -3,7 +3,6 @@ package tij.changelogs.config.parser;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import tij.changelogs.config.model.ConfigFileVersion;
 import tij.changelogs.config.model.VersioningConfig;
 import tij.changelogs.config.model.VersioningEvent;
 import tij.changelogs.config.model.VersioningEventType;
@@ -46,47 +45,7 @@ public final class VersioningParser {
         return VersioningParserV1.parse(root);
     }
 
-    public static VersioningConfig parse(Element root, ConfigFileVersion configFileVersion) {
-        return switch (configFileVersion) {
-            case ConfigFileVersion.v3 -> VersioningParserV1.parse(root);
-            case ConfigFileVersion.v4 -> VersioningParserV2.parse(root);
-            default -> VersioningConfig.INVALID;
-        };
-    }
-
     private static class VersioningParserV1 {
-        public static VersioningConfig parse(Element root) {
-            NodeList versioning = root.getElementsByTagName(TAG_VERSIONING);
-
-            if (versioning.getLength() == 0)
-                return VersioningConfig.INVALID;
-
-            Element versioningElement = (Element) versioning.item(0);
-
-            NodeList ruleList = versioningElement.getElementsByTagName(TAG_RULE);
-
-            List<VersioningRule> result = new ArrayList<>();
-
-            for (int i = 0; i < ruleList.getLength(); i++) {
-                Node node = ruleList.item(i);
-
-                if (node.getNodeType() != Node.ELEMENT_NODE)
-                    continue;
-
-                Element ruleElement = (Element) node;
-
-                Element filename = (Element) ruleElement.getElementsByTagName(TAG_FILENAME).item(0);
-
-                Element version = (Element) ruleElement.getElementsByTagName(TAG_VERSION).item(0);
-
-                result.add(new VersioningRule(filename.getAttribute(ATTR__REGEX), version.getAttribute(ATTR__REGEX)));
-            }
-
-            return new VersioningConfig(result, List.of());
-        }
-    }
-
-    private static class VersioningParserV2 {
         public static VersioningConfig parse(Element root) {
             NodeList versioningNodes = root.getElementsByTagName(TAG_VERSIONING);
 

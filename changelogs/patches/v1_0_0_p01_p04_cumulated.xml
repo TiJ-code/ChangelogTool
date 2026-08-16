@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<patch version="1">
+    <topic name="default">
+        <component ref="config-parser">
+            <category name="additions">
+                <entry>configuration-driven version sources, development phases, phase formatters, snapshot state, and phase transition events</entry>
+                <entry>initial and release phase roles in the stable version 1 configuration format</entry>
+            </category>
+            <category name="refactorings">
+                <entry>configuration parsing to support configurable versioning phases, formatters, and optional phase-entry events</entry>
+            </category>
+        </component>
+        <component ref="versioning">
+            <category name="additions">
+                <entry>configured numeric version increments and phase transitions</entry>
+                <entry>independent snapshot state for unreleased versions within a development phase</entry>
+                <entry>version source consistency validation across configured files</entry>
+                <entry>version change-set planning before applying coordinated file modifications</entry>
+                <entry>shared versioning model and subsystem tests for formatters, sources, consistency, and change application</entry>
+            </category>
+            <category name="refactorings">
+                <entry>versioning CLI commands to operate through generic configured operations</entry>
+                <entry>numeric increments to enter the configured initial phase as snapshots</entry>
+                <entry>release operations to clear snapshot state without changing the numeric version</entry>
+                <entry>next-phase operations to follow configured transitions and apply phase-entry events</entry>
+            </category>
+        </component>
+        <component ref="archive">
+            <category name="additions">
+                <entry>phase-aware archive directories for versioned changelogs</entry>
+                <entry>direct version archive directories for single-phase configurations</entry>
+            </category>
+            <category name="refactorings">
+                <entry>archive processing to consume the versioning configuration, shared versioning model, and configured formatter</entry>
+            </category>
+        </component>
+    </topic>
+</patch>

@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE patch SYSTEM "patch.v2.dtd">
-<patch version="2">
-    <component ref="component1">
-        <category name="additions">
-            <breaking severity="major">
-                <entry>Value1</entry>
-            </breaking>
-            <entry>Value2</entry>
-        </category>
-    </component>
-    <component ref="component2">
-        <category name="refactorings">
-            <breaking severity="minor">
-                <entry>Value3</entry>
-            </breaking>
-            <entry>Value4</entry>
-        </category>
-    </component>
+<patch version="1">
+    <topic name="default">
+        <component ref="component1">
+            <category name="additions"><entry>Value1</entry></category>
+        </component>
+    </topic>
 </patch>

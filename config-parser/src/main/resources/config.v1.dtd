@@ -1,12 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!ELEMENT config (categories?, topics?, breaking.changes?)>
-<!ATTLIST config version CDATA #REQUIRED>
 
+<!-- Legacy/documentation-only declaration. Runtime validation uses config.v1.xsd. -->
+<!ELEMENT config (versioning?, categories?, components?, topics?, breaking.changes?)>
+<!ATTLIST config version (1) #REQUIRED>
+
+<!-- Versioning -->
+<!ELEMENT versioning (rule+, phases)>
+<!ELEMENT rule (filename, version)>
+<!ATTLIST rule name CDATA #IMPLIED>
+<!ELEMENT filename EMPTY>
+<!ATTLIST filename regex CDATA #REQUIRED>
+<!ELEMENT version EMPTY>
+<!ATTLIST version regex CDATA #REQUIRED>
+
+<!ELEMENT phases (phase+)>
+<!ATTLIST phases initial CDATA #IMPLIED release CDATA #IMPLIED>
+<!ELEMENT phase (next, prefix?, suffix?, formatter, events?)>
+<!ATTLIST phase name CDATA #REQUIRED>
+<!ELEMENT next (#PCDATA)>
+<!ELEMENT prefix (#PCDATA)>
+<!ELEMENT suffix (#PCDATA)>
+<!ELEMENT formatter (#PCDATA)>
+<!ELEMENT events (event*)>
+<!ELEMENT event (major?, minor?, patch?)>
+<!ATTLIST event on (phase_entered) #REQUIRED>
+<!ELEMENT major (#PCDATA)>
+<!ELEMENT minor (#PCDATA)>
+<!ELEMENT patch (#PCDATA)>
+
+<!-- Categories -->
 <!ELEMENT categories (category*)>
-<!ELEMENT category ANY>
+<!ELEMENT category (#PCDATA)>
 <!ATTLIST category name CDATA #REQUIRED>
 
-<!ELEMENT topics (entry*)>
-<!ELEMENT breaking.changes (entry*)>
+<!-- Components -->
+<!ELEMENT components (component*)>
+<!ELEMENT component (component*)>
+<!ATTLIST component id CDATA #REQUIRED name CDATA #IMPLIED>
 
-<!ELEMENT entry ANY>
+<!-- Topics -->
+<!ELEMENT topics (topic*)>
+<!ELEMENT topic (component-ref*, topic*)>
+<!ATTLIST topic name CDATA #REQUIRED>
+<!ELEMENT component-ref EMPTY>
+<!ATTLIST component-ref ref CDATA #REQUIRED>
+
+<!-- Breaking changes -->
+<!ELEMENT breaking.changes (entry*)>
+<!ELEMENT entry (#PCDATA)>

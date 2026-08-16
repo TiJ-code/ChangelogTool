@@ -48,7 +48,7 @@ config-parser/src/main/resources/config_changelog_tool.xml
 A configuration contains these main sections:
 
 ```xml
-<config version="4">
+<config version="1">
     <versioning>...</versioning>
     <categories>...</categories>
     <components>...</components>
@@ -251,17 +251,18 @@ Create patch files under:
 changelogs/patches/
 ```
 
-The current patch format is version 2:
+The stable patch format is version 1:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE patch SYSTEM "patch.v2.dtd">
-<patch version="2">
-    <component ref="dungeon">
-        <category name="refactorings">
-            <entry>Dungeon generation was redesigned.</entry>
-        </category>
-    </component>
+<patch version="1">
+    <topic name="default">
+        <component ref="dungeon">
+            <category name="refactorings">
+                <entry>Dungeon generation was redesigned.</entry>
+            </category>
+        </component>
+    </topic>
 </patch>
 ```
 
@@ -494,7 +495,7 @@ The increment operation already marks the new version as a snapshot, so no separ
 
 ## Development notes
 
-- Keep project-specific version behavior in `config.v4.xsd`-validated configuration.
+- Keep project-specific version behavior in `config.v1.xsd`-validated configuration.
 - Keep shared version values in `versioning-model` rather than coupling other modules to the versioning CLI.
 - Add new version source formats through configuration where possible.
 - Treat `changelogs/cumulated` as a working directory and `changelogs/archive` as the historical output.

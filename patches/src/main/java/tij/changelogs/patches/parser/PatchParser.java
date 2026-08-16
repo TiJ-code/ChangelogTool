@@ -8,6 +8,9 @@ import tij.changelogs.xmlModel.XmlEntry;
 import tij.changelogs.xmlModel.XmlComponent;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.XMLConstants;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +54,7 @@ public final class PatchParser {
             }
 
             result.remove(existingTopic);
-            result.add(new XmlComponent(existingTopic.path(), mergedCategories));
+            result.add(new XmlComponent(existingTopic.topic(), existingTopic.path(), mergedCategories));
         }
 
 
@@ -95,7 +98,8 @@ public final class PatchParser {
 
     private static XmlComponent findMatchingTopic(XmlComponent target, List<XmlComponent> topics) {
         for (XmlComponent xmlComponent : topics) {
-            if (xmlComponent.path().equals(target.path()))
+            if (java.util.Objects.equals(xmlComponent.topic(), target.topic())
+                    && xmlComponent.path().equals(target.path()))
                 return xmlComponent;
         }
         return null;
@@ -136,6 +140,10 @@ public final class PatchParser {
             var builder = factory.newDocumentBuilder();
 
             Document doc = builder.parse(file);
+
+            var schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+                    .newSchema(PatchParser.class.getResource("/patch.v1.xsd"));
+            schema.newValidator().validate(new DOMSource(doc));
 
             var el = doc.getDocumentElement();
 

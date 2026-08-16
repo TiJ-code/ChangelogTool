@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<patch version="1">
+    <topic name="default">
+        <component ref="config-parser">
+            <category name="additions">
+                <entry>stable configuration format version 1 with XSD validation</entry>
+            </category>
+            <category name="refactorings">
+                <entry>obsolete prerelease configuration parser versions and compatibility branches</entry>
+            </category>
+        </component>
+        <component ref="patches">
+            <category name="additions">
+                <entry>stable patch format version 1 with XSD validation and topic-scoped component changes</entry>
+            </category>
+            <category name="refactorings">
+                <entry>obsolete prerelease patch parser versions and DTD-based validation</entry>
+            </category>
+        </component>
+        <component ref="xml-model">
+            <category name="additions">
+                <entry>topic identity to the shared XML component model</entry>
+            </category>
+        </component>
+        <component ref="markdown">
+            <category name="refactorings">
+                <entry>topic-aware cumulative changelog parsing and Markdown rendering</entry>
+            </category>
+        </component>
+    </topic>
+</patch>
