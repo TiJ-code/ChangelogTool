@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!ELEMENT patch (topic*)>
-<!ATTLIST patch version CDATA #REQUIRED>
 
-<!ELEMENT topic (category*)>
+<!-- Legacy/documentation-only declaration. Runtime validation uses patch.v1.xsd. -->
+<!ELEMENT patch (topic*)>
+<!ATTLIST patch version (1) #REQUIRED>
+
+<!ELEMENT topic (component*)>
 <!ATTLIST topic name CDATA #REQUIRED>
+
+<!ELEMENT component (category*)>
+<!ATTLIST component ref CDATA #REQUIRED>
 
 <!ELEMENT category (breaking*, entry*)>
 <!ATTLIST category name CDATA #REQUIRED>
@@ -11,4 +16,4 @@
 <!ELEMENT breaking (entry*)>
 <!ATTLIST breaking severity CDATA #REQUIRED>
 
-<!ELEMENT entry ANY>
+<!ELEMENT entry (#PCDATA)>

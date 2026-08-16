@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="patch">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="topic" minOccurs="0" maxOccurs="unbounded" type="TopicType"/>
+            </xs:sequence>
+            <xs:attribute name="version" use="required" fixed="1"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="TopicType">
+        <xs:sequence>
+            <xs:element name="component" minOccurs="0" maxOccurs="unbounded" type="ComponentType"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="ComponentType">
+        <xs:sequence>
+            <xs:element name="category" minOccurs="0" maxOccurs="unbounded" type="CategoryType"/>
+        </xs:sequence>
+        <xs:attribute name="ref" use="required" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="CategoryType">
+        <xs:sequence>
+            <xs:element name="breaking" minOccurs="0" maxOccurs="unbounded" type="BreakingType"/>
+            <xs:element name="entry" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="BreakingType">
+        <xs:sequence>
+            <xs:element name="entry" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="severity" use="required" type="xs:string"/>
+    </xs:complexType>
+</xs:schema>

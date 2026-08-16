@@ -94,8 +94,9 @@ public final class ChangelogBuilder {
 
             Map<String, XmlComponent> componentMap = components.stream()
                             .collect(Collectors.toMap(
-                                    XmlComponent::path,
-                                    Function.identity()
+                                    c -> key(c.topic(), c.path()),
+                                    Function.identity(),
+                                    (a, b) -> a
                             ));
 
             for (TopicConfig topic : config.topics()) {
@@ -122,7 +123,7 @@ public final class ChangelogBuilder {
         topicElement.setAttribute(ATTRIBUTE_TOPIC_NAME, topic.name());
 
         for (String ref : topic.componentRefs()) {
-            XmlComponent component = components.get(ref);
+            XmlComponent component = components.get(key(topic.name(), ref));
 
             if (component == null)
                 continue;
@@ -136,6 +137,10 @@ public final class ChangelogBuilder {
         }
 
         return topicElement;
+    }
+
+    private static String key(String topic, String component) {
+        return (topic == null ? "" : topic) + "\u0000" + component;
     }
 
     private static Element createComponent(Document doc, XmlComponent component) {

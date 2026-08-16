@@ -4,9 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import tij.changelogs.config.Config;
-import tij.changelogs.config.ConfigValidator;
 import tij.changelogs.config.model.ComponentConfig;
-import tij.changelogs.config.model.ConfigFileVersion;
 import tij.changelogs.config.model.TopicConfig;
 import tij.changelogs.config.model.VersioningConfig;
 import tij.changelogs.config.parser.VersioningParser;
@@ -16,27 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class ConfigParserV3 {
-    private ConfigParserV3() {}
+public final class ConfigParserDocument {
+    private ConfigParserDocument() {}
 
     public static Config parse(Document doc) {
-        try {
-            ConfigValidator.validate(doc, "/config.v3.xsd");
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid configuration file: " + e.getMessage(), e);
-        }
-
-        return parseDocument(doc);
-    }
-
-    public static Config parseDocument(Document doc) {
-        return parseDocument(doc, ConfigFileVersion.v3);
-    }
-
-    public static Config parseDocument(Document doc, ConfigFileVersion version) {
         Element root = doc.getDocumentElement();
 
-        VersioningConfig versioning = VersioningParser.parse(root, version);
+        VersioningConfig versioning = VersioningParser.parse(root);
 
         Map<String, String> categories = parseCategories(root);
 

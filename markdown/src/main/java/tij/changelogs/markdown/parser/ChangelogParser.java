@@ -116,6 +116,7 @@ public final class ChangelogParser {
 
                 parsedComponents.add(
                         new XmlComponent(
+                                topicName,
                                 compRef,
                                 parseCategories(compElement, config)
                         )
