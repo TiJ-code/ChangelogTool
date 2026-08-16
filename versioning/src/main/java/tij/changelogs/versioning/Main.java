@@ -4,7 +4,6 @@ import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigSystem;
 import tij.changelogs.config.model.VersioningPhase;
 import tij.changelogs.config.model.VersioningConfig;
-import tij.changelogs.config.model.VersioningRule;
 import tij.changelogs.versioning.cli.CliArguments;
 import tij.changelogs.versioning.cli.CliCommand;
 import tij.changelogs.versioning.cli.CliParser;
@@ -15,17 +14,16 @@ import tij.changelogs.versioning.operation.IncrementMinorOperation;
 import tij.changelogs.versioning.operation.IncrementPatchOperation;
 import tij.changelogs.versioning.operation.NextPhaseOperation;
 import tij.changelogs.versioning.operation.SetPhaseOperation;
-import tij.changelogs.versioning.operation.VersionOperation;
+import tij.changelogs.versioning.operation.IVersionOperation;
 import tij.changelogs.versioning.resolver.VersionSourceResolver;
 import tij.changelogs.versioning.service.VersionManager;
 import tij.changelogs.versioning.source.RegexVersionSource;
-import tij.changelogs.versioning.source.VersionSource;
+import tij.changelogs.versioning.source.IVersionSource;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 public final class Main {
     private Main() {}
@@ -37,9 +35,9 @@ public final class Main {
         Config config = ConfigSystem.load(arguments.configFilePath());
         List<VersioningPhase> phases = config.versioningConfig().versionPhases();
         var formatter = new ConfiguredVersionFormatter(phases);
-        List<VersionSource> sources = config.versioningConfig().versionRules().stream()
+        List<IVersionSource> sources = config.versioningConfig().versionRules().stream()
                 .map(rule -> new RegexVersionSource(rule, formatter))
-                .map(source -> (VersionSource) source)
+                .map(source -> (IVersionSource) source)
                 .toList();
 
         VersionManager manager = new VersionManager(new VersionSourceResolver(new File("."), sources));
@@ -50,16 +48,16 @@ public final class Main {
             return;
         }
 
-        VersionOperation operation = operation(arguments, config.versioningConfig());
+        IVersionOperation operation = operation(arguments, config.versioningConfig());
         VersionChangeSet changes = manager.plan(current, operation);
         manager.apply(changes);
     }
 
-    private static VersionOperation operation(CliArguments arguments, VersioningConfig versioning) {
+    private static IVersionOperation operation(CliArguments arguments, VersioningConfig versioning) {
         return switch (arguments.command()) {
             case RELEASE -> current -> current.withSnapshot(false);
             case INCREMENT -> {
-                VersionOperation increment = switch (arguments.value().toLowerCase(Locale.ROOT)) {
+                IVersionOperation increment = switch (arguments.value().toLowerCase(Locale.ROOT)) {
                     case "major" -> new IncrementMajorOperation();
                     case "minor" -> new IncrementMinorOperation();
                     case "patch" -> new IncrementPatchOperation();

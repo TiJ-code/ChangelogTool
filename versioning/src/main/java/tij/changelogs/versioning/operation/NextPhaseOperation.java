@@ -7,7 +7,7 @@ import tij.changelogs.config.model.VersioningPhase;
 
 import java.util.Map;
 
-public final class NextPhaseOperation implements VersionOperation {
+public final class NextPhaseOperation implements IVersionOperation {
     private final Map<String, VersioningPhase> phases;
 
     public NextPhaseOperation(Map<String, VersioningPhase> phases) {

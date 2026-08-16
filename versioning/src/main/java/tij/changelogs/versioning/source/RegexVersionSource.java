@@ -2,18 +2,18 @@ package tij.changelogs.versioning.source;
 
 import tij.changelogs.config.model.VersioningRule;
 import tij.changelogs.versioning.model.Version;
-import tij.changelogs.versioning.format.VersionFormatter;
+import tij.changelogs.versioning.format.IVersionFormatter;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.regex.Matcher;
 
-public final class RegexVersionSource implements VersionSource {
+public final class RegexVersionSource implements IVersionSource {
     private final VersioningRule rule;
-    private final VersionFormatter formatter;
+    private final IVersionFormatter formatter;
 
-    public RegexVersionSource(VersioningRule rule, VersionFormatter formatter) {
+    public RegexVersionSource(VersioningRule rule, IVersionFormatter formatter) {
         this.rule = rule;
         this.formatter = formatter;
     }
