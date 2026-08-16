@@ -1,8 +1,6 @@
 package tij.changelogs.config.parser;
 
 import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 import tij.changelogs.config.Config;
 import tij.changelogs.config.model.ConfigFileVersion;
 
@@ -22,7 +20,7 @@ public final class ConfigParser {
             ConfigFileVersion version =
                     parseVersionWithoutDtd(new ByteArrayInputStream(data));
 
-            return parseWithDtd(
+            return parseWithXsd(
                     new ByteArrayInputStream(data),
                     version
             );
@@ -48,7 +46,7 @@ public final class ConfigParser {
         }
     }
 
-    private static Config parseWithDtd(
+    private static Config parseWithXsd(
             InputStream is,
             ConfigFileVersion fv
     ) {
@@ -58,11 +56,9 @@ public final class ConfigParser {
 
             factory.setNamespaceAware(false);
             factory.setIgnoringComments(true);
-            factory.setValidating(true);
+            factory.setValidating(false);
 
             var builder = factory.newDocumentBuilder();
-
-            builder.setEntityResolver(createResolver());
 
             Document doc = builder.parse(is);
 
@@ -110,30 +106,4 @@ public final class ConfigParser {
         }
     }
 
-    private static EntityResolver createResolver() {
-
-        return (_, systemId) -> {
-
-            if (systemId == null) {
-                return null;
-            }
-
-            String fileName = systemId;
-
-            if (systemId.contains("/")) {
-                fileName = systemId.substring(systemId.lastIndexOf('/'));
-            }
-
-            InputStream resource =
-                    ConfigParser.class.getResourceAsStream(fileName);
-
-            if (resource != null) {
-                return new InputSource(resource);
-            }
-
-            throw new FileNotFoundException(
-                    "DTD not found in resources: " + fileName
-            );
-        };
-    }
 }

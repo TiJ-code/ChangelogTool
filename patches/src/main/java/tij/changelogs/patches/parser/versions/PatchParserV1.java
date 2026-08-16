@@ -1,318 +1,64 @@
 package tij.changelogs.patches.parser.versions;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
+import org.w3c.dom.*;
 import tij.changelogs.patches.config.ReducedConfig;
-import tij.changelogs.xmlModel.XmlBreaking;
-import tij.changelogs.xmlModel.XmlCategory;
-import tij.changelogs.xmlModel.XmlEntry;
-import tij.changelogs.xmlModel.XmlComponent;
-
+import tij.changelogs.xmlModel.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.*;
 import static tij.changelogs.xmlModel.XmlConstants.*;
 
 public final class PatchParserV1 {
-    private static final String TAG_TOPIC = "topic";
-    private static final String ATTRIBUTE_TOPIC_NAME = "name";
-
     private PatchParserV1() {}
-
-    public static List<XmlComponent> parse(
-            File patchFile,
-            ReducedConfig config
-    ) {
-        try (InputStream is = Files.newInputStream(
-                patchFile.toPath().toAbsolutePath()
-        )) {
-
-            var factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(false);
-            factory.setIgnoringComments(true);
-            factory.setValidating(false);
-
-            var builder = factory.newDocumentBuilder();
-
-            builder.setEntityResolver(createResolver());
-
-            Document doc = builder.parse(is);
-
-            if (!doc.getDocumentElement()
-                    .getTagName()
-                    .equals(TAG_PATCH)) {
-                return List.of();
+    public static List<XmlComponent> parse(File file, ReducedConfig config) {
+        try (var in = Files.newInputStream(file.toPath())) {
+            var f = DocumentBuilderFactory.newInstance(); f.setNamespaceAware(false); f.setIgnoringComments(true);
+            Element root = f.newDocumentBuilder().parse(in).getDocumentElement();
+            if (!TAG_PATCH.equals(root.getTagName())) throw new IllegalArgumentException("Root element must be <patch>");
+            List<XmlComponent> out = new ArrayList<>();
+            for (Element topic : children(root, TAG_TOPIC)) {
+                String topicName = required(topic, ATTRIBUTE_TOPIC_NAME);
+                if (!config.topicValues().contains(topicName)) throw new IllegalArgumentException("Invalid topic: " + topicName);
+                for (Element component : children(topic, TAG_COMPONENT)) {
+                    String ref = required(component, ATTRIBUTE_COMPONENT_REF);
+                    if (!config.componentValues().contains(ref)) throw new IllegalArgumentException("Invalid component reference: " + ref);
+                    out.add(new XmlComponent(topicName, ref, categories(component, config)));
+                }
             }
-
-            List<XmlComponent> components = new ArrayList<>();
-
-            parseTopics(doc, components, config);
-
-            return components;
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+            return out;
+        } catch (Exception e) { throw new RuntimeException("Failed to parse patch " + file, e); }
     }
-
-
-    private static void parseTopics(
-            Document doc,
-            List<XmlComponent> components,
-            ReducedConfig config
-    ) {
-
-        NodeList topicNodes =
-                doc.getElementsByTagName(TAG_TOPIC);
-
-        if (topicNodes.getLength() > config.componentValues().size()) {
-            throw new RuntimeException(
-                    "Too many topic nodes in patch, max possible: "
-                            + config.componentValues().size()
-            );
-        }
-
-
-        for (int i = 0; i < topicNodes.getLength(); i++) {
-
-            Node node = topicNodes.item(i);
-
-            if (node.getNodeType() != Node.ELEMENT_NODE)
-                continue;
-
-
-            Element element = (Element) node;
-
-
-            if (!element.hasAttribute(ATTRIBUTE_TOPIC_NAME)) {
-                throw new RuntimeException(
-                        "No attribute \"%s\" specified on <%s>"
-                                .formatted(
-                                        ATTRIBUTE_TOPIC_NAME,
-                                        TAG_TOPIC
-                                )
-                );
+    private static List<XmlCategory> categories(Element component, ReducedConfig config) {
+        List<XmlCategory> out = new ArrayList<>();
+        for (Element category : children(component, TAG_CATEGORY)) {
+            String name = required(category, ATTRIBUTE_CATEGORY_NAME);
+            if (!config.categoryValues().contains(name)) throw new IllegalArgumentException("Invalid category: " + name);
+            List<XmlBreaking> breaking = new ArrayList<>();
+            for (Element b : children(category, TAG_BREAKING)) {
+                String severity = required(b, ATTRIBUTE_BREAKING_SEVERITY);
+                if (!config.breakingLevelValues().contains(severity)) throw new IllegalArgumentException("Invalid breaking severity: " + severity);
+                breaking.add(new XmlBreaking(severity, entries(b)));
             }
-
-
-            String topic =
-                    element.getAttribute(ATTRIBUTE_TOPIC_NAME);
-
-
-            if (!config.componentValues().contains(topic)) {
-                throw new RuntimeException(
-                        "Invalid topic \"%s\" specified: %s"
-                                .formatted(
-                                        ATTRIBUTE_TOPIC_NAME,
-                                        topic
-                                )
-                );
-            }
-
-
-            components.add(
-                    new XmlComponent(
-                            topic,
-                            parseCategories(element, config)
-                    )
-            );
+            out.add(new XmlCategory(name, breaking, entries(category)));
         }
+        return out;
     }
-
-
-    private static List<XmlCategory> parseCategories(
-            Element topicElement,
-            ReducedConfig config
-    ) {
-
-        List<XmlCategory> categories = new ArrayList<>();
-
-        NodeList nodes =
-                topicElement.getElementsByTagName(TAG_CATEGORY);
-
-
-        if (nodes.getLength() > config.categoryValues().size()) {
-            throw new RuntimeException(
-                    "Too many category nodes in topic \"%s\", max possible %d"
-                            .formatted(
-                                    topicElement.getAttribute(ATTRIBUTE_TOPIC_NAME),
-                                    config.categoryValues().size()
-                            )
-            );
-        }
-
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-
-            Node node = nodes.item(i);
-
-            if (node.getNodeType() != Node.ELEMENT_NODE)
-                continue;
-
-
-            Element element = (Element) node;
-
-
-            if (!element.hasAttribute(ATTRIBUTE_CATEGORY_NAME)) {
-                throw new RuntimeException(
-                        "No attribute \"%s\" specified on <%s>"
-                                .formatted(
-                                        ATTRIBUTE_CATEGORY_NAME,
-                                        TAG_CATEGORY
-                                )
-                );
-            }
-
-
-            String category =
-                    element.getAttribute(ATTRIBUTE_CATEGORY_NAME);
-
-
-            if (!config.categoryValues().contains(category)) {
-                throw new RuntimeException(
-                        "Invalid category specified: " + category
-                );
-            }
-
-
-            categories.add(
-                    new XmlCategory(
-                            category,
-                            parseBreakings(element, config),
-                            parseEntries(element)
-                    )
-            );
-        }
-
-        return categories;
+    private static List<XmlEntry> entries(Element parent) {
+        List<XmlEntry> out = new ArrayList<>();
+        for (Element e : children(parent, TAG_ENTRY)) out.add(new XmlEntry(e.getTextContent().trim()));
+        return out;
     }
-
-
-    private static List<XmlBreaking> parseBreakings(
-            Element categoryElement,
-            ReducedConfig config
-    ) {
-
-        List<XmlBreaking> breakings = new ArrayList<>();
-
-        NodeList nodes =
-                categoryElement.getElementsByTagName(TAG_BREAKING);
-
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-
-            Node node = nodes.item(i);
-
-            if (node.getNodeType() != Node.ELEMENT_NODE)
-                continue;
-
-
-            Element element = (Element) node;
-
-
-            if (!element.hasAttribute(ATTRIBUTE_BREAKING_SEVERITY)) {
-                throw new RuntimeException(
-                        "No attribute \"%s\" specified on <%s>"
-                                .formatted(
-                                        ATTRIBUTE_BREAKING_SEVERITY,
-                                        TAG_BREAKING
-                                )
-                );
-            }
-
-
-            String severity =
-                    element.getAttribute(ATTRIBUTE_BREAKING_SEVERITY);
-
-
-            if (!config.breakingLevelValues().contains(severity)) {
-                throw new RuntimeException(
-                        "Invalid breaking severity: " + severity
-                );
-            }
-
-
-            breakings.add(
-                    new XmlBreaking(
-                            severity,
-                            parseEntries(element)
-                    )
-            );
+    private static List<Element> children(Element parent, String name) {
+        List<Element> out = new ArrayList<>();
+        for (int i = 0; i < parent.getChildNodes().getLength(); i++) {
+            Node n = parent.getChildNodes().item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE && name.equals(n.getNodeName())) out.add((Element)n);
         }
-
-        return breakings;
+        return out;
     }
-
-
-    private static List<XmlEntry> parseEntries(Element parent) {
-
-        List<XmlEntry> entries = new ArrayList<>();
-
-        NodeList children =
-                parent.getChildNodes();
-
-
-        for (int i = 0; i < children.getLength(); i++) {
-
-            Node node = children.item(i);
-
-            if (node.getNodeType() != Node.ELEMENT_NODE)
-                continue;
-
-
-            Element element = (Element) node;
-
-
-            if (TAG_ENTRY.equals(element.getTagName())) {
-                entries.add(
-                        new XmlEntry(
-                                element.getTextContent()
-                        )
-                );
-            }
-        }
-
-        return entries;
-    }
-
-
-    private static EntityResolver createResolver() {
-        return (_, systemId) -> {
-
-            if (systemId == null) {
-                return null;
-            }
-
-            String fileName = systemId;
-
-            if (systemId.contains("/")) {
-                fileName =
-                        systemId.substring(
-                                systemId.lastIndexOf('/') + 1
-                        );
-            }
-
-            String resourcePath = "/" + fileName;
-
-            InputStream resource =
-                    PatchParserV1.class.getResourceAsStream(resourcePath);
-
-            if (resource != null) {
-                return new InputSource(resource);
-            }
-
-            throw new FileNotFoundException(
-                    "DTD not found in resources: " + resourcePath
-            );
-        };
+    private static String required(Element e, String name) {
+        if (!e.hasAttribute(name)) throw new IllegalArgumentException("Missing attribute '" + name + "' on <" + e.getTagName() + ">");
+        return e.getAttribute(name);
     }
 }

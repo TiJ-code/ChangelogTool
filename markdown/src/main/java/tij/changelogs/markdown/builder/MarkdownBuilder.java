@@ -24,7 +24,7 @@ public final class MarkdownBuilder {
         if (xmlComponents != null) {
             for (XmlComponent t : xmlComponents) {
                 if (t != null && t.path() != null) {
-                    xmlMap.put(t.path(), t);
+                    xmlMap.put(key(t.topic(), t.path()), t);
                 }
             }
         }
@@ -32,13 +32,13 @@ public final class MarkdownBuilder {
         if (config.topics() == null) return sb.toString();
 
         for (TopicConfig topicConfig : config.topics()) {
-            boolean topicHasDirectData = xmlMap.containsKey(topicConfig.name());
+            boolean topicHasDirectData = xmlMap.containsKey(key(topicConfig.name(), topicConfig.name()));
             boolean topicHasChildData = false;
 
             if (topicConfig.componentRefs() != null && config.components() != null) {
                 for (String compRef : topicConfig.componentRefs()) {
                     ComponentConfig compConfig = config.components().get(compRef);
-                    if (compConfig != null && hasAnyData(compConfig, xmlMap)) {
+                    if (compConfig != null && hasAnyData(compConfig, xmlMap, topicConfig.name())) {
                         topicHasChildData = true;
                         break;
                     }
@@ -55,14 +55,14 @@ public final class MarkdownBuilder {
             }
 
             if (topicHasDirectData) {
-                appendComponentData(xmlMap.get(topicConfig.name()), config, sb, isDefaultTopic ? 1 : 2);
+                appendComponentData(xmlMap.get(key(topicConfig.name(), topicConfig.name())), config, sb, isDefaultTopic ? 1 : 2);
             }
 
             if (topicConfig.componentRefs() != null && config.components() != null) {
                 for (String compRef : topicConfig.componentRefs()) {
                     ComponentConfig compConfig = config.components().get(compRef);
                     if (compConfig != null) {
-                        processComponentTree(compConfig, isDefaultTopic ? 2 : 3, xmlMap, config, sb);
+                        processComponentTree(compConfig, isDefaultTopic ? 2 : 3, xmlMap, config, sb, topicConfig.name());
                     }
                 }
             }
@@ -73,16 +73,16 @@ public final class MarkdownBuilder {
         return sb.toString();
     }
 
-    private static void processComponentTree(ComponentConfig compConfig, int depth, Map<String, XmlComponent> xmlMap, Config config, StringBuilder sb) {
-        if (!hasAnyData(compConfig, xmlMap))
+    private static void processComponentTree(ComponentConfig compConfig, int depth, Map<String, XmlComponent> xmlMap, Config config, StringBuilder sb, String topic) {
+        if (!hasAnyData(compConfig, xmlMap, topic))
             return;
 
         String headerPrefix = "#".repeat(Math.min(depth, 6)) + " ";
         sb.append(headerPrefix).append(compConfig.name()).append("\n");
 
-        XmlComponent xmlComp = xmlMap.get(compConfig.id());
+        XmlComponent xmlComp = xmlMap.get(key(topic, compConfig.id()));
         if (xmlComp == null) {
-            xmlComp = xmlMap.get(compConfig.name());
+            xmlComp = xmlMap.get(key(topic, compConfig.name()));
         }
 
         if (xmlComp != null) {
@@ -91,7 +91,7 @@ public final class MarkdownBuilder {
 
         if (compConfig.children() != null) {
             for (ComponentConfig child : compConfig.children()) {
-                processComponentTree(child, depth + 1, xmlMap, config, sb);
+                processComponentTree(child, depth + 1, xmlMap, config, sb, topic);
             }
         }
     }
@@ -161,17 +161,19 @@ public final class MarkdownBuilder {
         }
     }
 
-    private static boolean hasAnyData(ComponentConfig comp, Map<String, XmlComponent> xmlMap) {
-        if (xmlMap.containsKey(comp.id()) || xmlMap.containsKey(comp.name())) {
+    private static boolean hasAnyData(ComponentConfig comp, Map<String, XmlComponent> xmlMap, String topic) {
+        if (xmlMap.containsKey(key(topic, comp.id())) || xmlMap.containsKey(key(topic, comp.name()))) {
             return true;
         }
         if (comp.children() != null) {
             for (ComponentConfig child : comp.children()) {
-                if (hasAnyData(child, xmlMap)) return true;
+                if (hasAnyData(child, xmlMap, topic)) return true;
             }
         }
         return false;
     }
+
+    private static String key(String topic, String component) { return (topic == null ? "" : topic) + "\u0000" + component; }
 
     private static String toTitle(String s) {
         if (s == null || s.isEmpty()) return s;
