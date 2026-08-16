@@ -1,13 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-<patch version="1">
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<changelog>
     <topic name="default">
+        <component ref="archive">
+            <category name="additions">
+                <entry>phase-aware archive directories for versioned changelogs</entry>
+                <entry>direct version archive directories for single-phase configurations</entry>
+            </category>
+            <category name="refactorings">
+                <entry>archive processing to consume the versioning configuration, shared versioning model, and configured formatter</entry>
+            </category>
+        </component>
         <component ref="config-parser">
             <category name="additions">
+                <entry>stable configuration format version 1 with XSD validation</entry>
                 <entry>configuration-driven version sources, development phases, phase formatters, snapshot state, and phase transition events</entry>
                 <entry>initial and release phase roles in the stable version 1 configuration format</entry>
             </category>
             <category name="refactorings">
+                <entry>obsolete prerelease configuration parser versions and compatibility branches</entry>
                 <entry>configuration parsing to support configurable versioning phases, formatters, and optional phase-entry events</entry>
+            </category>
+        </component>
+        <component ref="markdown">
+            <category name="refactorings">
+                <entry>topic-aware cumulative changelog parsing and Markdown rendering</entry>
+            </category>
+        </component>
+        <component ref="patches">
+            <category name="additions">
+                <entry>stable patch format version 1 with XSD validation and topic-scoped component changes</entry>
+            </category>
+            <category name="refactorings">
+                <entry>obsolete prerelease patch parser versions and DTD-based validation</entry>
             </category>
         </component>
         <component ref="versioning">
@@ -25,14 +49,10 @@
                 <entry>next-phase operations to follow configured transitions and apply phase-entry events</entry>
             </category>
         </component>
-        <component ref="archive">
+        <component ref="xml-model">
             <category name="additions">
-                <entry>phase-aware archive directories for versioned changelogs</entry>
-                <entry>direct version archive directories for single-phase configurations</entry>
-            </category>
-            <category name="refactorings">
-                <entry>archive processing to consume the versioning configuration, shared versioning model, and configured formatter</entry>
+                <entry>topic identity to the shared XML component model</entry>
             </category>
         </component>
     </topic>
-</patch>
+</changelog>
