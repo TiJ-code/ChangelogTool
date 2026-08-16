@@ -52,6 +52,10 @@
                         tij.changelogs.archive.Main
                     </mainClass>
 
+                    <buildArgs>
+                        <buildArg>-H:IncludeResources=.*</buildArg>
+                    </buildArgs>
+
                     <imageName>ChangelogArchiver.tool</imageName>
                 </configuration>
             </plugin>
