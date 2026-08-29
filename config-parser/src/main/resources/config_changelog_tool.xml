@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<config version="1">
+<config version="2">
     <versioning>
-        <rule name="maven">
-            <filename regex=".*/?pom\.xml"/>
-            <version regex="&lt;version&gt;([^&lt;]+)&lt;/version&gt;"/>
-        </rule>
-        <phases initial="release" release="release">
-            <phase name="release">
-                <next>release</next>
-                <formatter>{#numeric_version}{#snapshot}</formatter>
-            </phase>
-        </phases>
+        <source file="pom.xml" regex="&lt;version&gt;([^&lt;]+)&lt;/version&gt;"/>
+        <snapshot-suffix>-SNAPSHOT</snapshot-suffix>
     </versioning>
     <archive hierarchy="major"/>
     <categories>

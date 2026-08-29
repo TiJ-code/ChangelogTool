@@ -3,6 +3,7 @@ package tij.changelogs.config.model;
 import org.w3c.dom.Document;
 import tij.changelogs.config.Config;
 import tij.changelogs.config.parser.versions.ConfigParserV1;
+import tij.changelogs.config.parser.versions.ConfigParserV2;
 
 import java.util.function.Function;
 
@@ -27,6 +28,6 @@ public enum ConfigFileVersion {
     }
 
     public static ConfigFileVersion getLatest() {
-        return values()[0];
+        return values()[values().length - 1];
     }
 }
