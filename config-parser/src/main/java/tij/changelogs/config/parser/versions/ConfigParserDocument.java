@@ -4,6 +4,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import tij.changelogs.config.Config;
+import tij.changelogs.config.model.ArchiveConfig;
+import tij.changelogs.config.model.ArchiveHierarchy;
 import tij.changelogs.config.model.ComponentConfig;
 import tij.changelogs.config.model.TopicConfig;
 import tij.changelogs.config.model.VersioningConfig;
@@ -30,14 +32,59 @@ public final class ConfigParserDocument {
         List<TopicConfig> topics = parseTopics(root);
 
         List<String> breakingLevels = parseBreakingLevels(root);
+        ArchiveConfig archive = parseArchive(root);
 
         return new Config(
                 versioning,
                 categories,
                 components,
                 topics,
-                breakingLevels
+                breakingLevels,
+                archive
         );
+    }
+
+    private static ArchiveConfig parseArchive(Element root) {
+        Element archive = getFirst(root, "archive");
+        if (archive == null) {
+            archive = getFirst(root, "archiving");
+        }
+        if (archive == null) {
+            return ArchiveConfig.DEFAULT;
+        }
+
+        String hierarchy = archive.getAttribute("hierarchy").trim();
+        if (hierarchy.isEmpty()) {
+            Element hierarchyElement = getFirst(archive, "hierarchy");
+            if (hierarchyElement != null) {
+                hierarchy = hierarchyElement.getTextContent().trim();
+            }
+        }
+        if (hierarchy.isEmpty()) {
+            NodeList rules = archive.getElementsByTagName("rule");
+            for (int i = 0; i < rules.getLength(); i++) {
+                Element rule = (Element) rules.item(i);
+                if ("hierarchy".equals(rule.getAttribute("name"))) {
+                    hierarchy = rule.getTextContent().trim();
+                    break;
+                }
+            }
+        }
+        if (hierarchy.isEmpty()) {
+            return ArchiveConfig.DEFAULT;
+        }
+
+        try {
+            ArchiveHierarchy parsed = ArchiveHierarchy.valueOf(hierarchy.toUpperCase().replace('-', '_'));
+            if (parsed == ArchiveHierarchy.NONE) {
+                throw new IllegalArgumentException();
+            }
+            return new ArchiveConfig(parsed);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "Unsupported archive hierarchy: " + hierarchy
+                            + ". Expected major or major-minor", e);
+        }
     }
 
     private static Map<String, String> parseCategories(Element root) {

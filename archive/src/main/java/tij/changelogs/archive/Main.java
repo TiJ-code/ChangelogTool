@@ -3,6 +3,7 @@ package tij.changelogs.archive;
 import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigConstants;
 import tij.changelogs.config.ConfigSystem;
+import tij.changelogs.config.model.ArchiveConfig;
 import tij.changelogs.config.model.VersioningPhase;
 import tij.changelogs.versioning.format.ConfiguredVersionFormatter;
 import tij.changelogs.versioning.model.Version;
@@ -31,7 +32,7 @@ public final class Main {
             File md = findSingle(files, ".md");
 
             Version version = formatter.parse(versionPart(xml.getName()));
-            Path outputDirectory = archiveDirectory(version, phases);
+            Path outputDirectory = archiveDirectory(version, phases, config.archiveConfig());
             Files.createDirectories(outputDirectory);
 
             move(xml, outputDirectory);
@@ -42,6 +43,14 @@ public final class Main {
     }
 
     static Path archiveDirectory(Version version, List<VersioningPhase> phases) {
+        return archiveDirectory(version, phases, ArchiveConfig.DEFAULT);
+    }
+
+    static Path archiveDirectory(
+            Version version,
+            List<VersioningPhase> phases,
+            ArchiveConfig archiveConfig
+    ) {
         Path directory = ConfigConstants.ARCHIVE_DIR.toPath();
 
         if (phases.size() > 1) {
@@ -51,7 +60,16 @@ public final class Main {
             directory = directory.resolve(safePathPart(version.phase()));
         }
 
-        return directory.resolve(safePathPart(version.numericString()));
+        return switch (archiveConfig.hierarchy()) {
+            case NONE -> directory.resolve(safePathPart(version.numericString()));
+            case MAJOR -> directory
+                    .resolve(safePathPart(Integer.toString(version.major())))
+                    .resolve(safePathPart("%d.%d".formatted(version.minor(), version.patch())));
+            case MAJOR_MINOR -> directory
+                    .resolve(safePathPart(Integer.toString(version.major())))
+                    .resolve(safePathPart(Integer.toString(version.minor())))
+                    .resolve(safePathPart(Integer.toString(version.patch())));
+        };
     }
 
     private static File[] findCumulatedFiles() {

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Legacy/documentation-only declaration. Runtime validation uses config.v1.xsd. -->
-<!ELEMENT config (versioning?, categories?, components?, topics?, breaking.changes?)>
+<!ELEMENT config (versioning?, archive?, categories?, components?, topics?, breaking.changes?)>
 <!ATTLIST config version (1) #REQUIRED>
+
+<!-- Archiving -->
+<!ELEMENT archive EMPTY>
+<!ATTLIST archive hierarchy (major | major-minor) #IMPLIED>
 
 <!-- Versioning -->
 <!ELEMENT versioning (rule+, phases)>
