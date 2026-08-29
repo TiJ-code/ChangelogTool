@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Version 2: full configuration format for the changelog tool. -->
+<!ELEMENT config (versioning, categories, components, topics, breaking.changes)>
+<!ATTLIST config version (2) #REQUIRED>
+
+<!ELEMENT versioning (source, snapshot-suffix?)>
+<!ELEMENT source EMPTY>
+<!ATTLIST source file CDATA #REQUIRED regex CDATA #REQUIRED>
+<!ELEMENT snapshot-suffix (#PCDATA)>
+
+<!-- Archiving -->
+<!ELEMENT archive EMPTY>
+<!ATTLIST archive hierarchy (major | major-minor) #IMPLIED>
+
+<!-- Categories -->
+<!ELEMENT categories (category*)>
+<!ELEMENT category (#PCDATA)>
+<!ATTLIST category name CDATA #REQUIRED>
+
+<!-- Components -->
+<!ELEMENT components (component*)>
+<!ELEMENT component (component*)>
+<!ATTLIST component id CDATA #REQUIRED name CDATA #IMPLIED>
+
+<!-- Topics -->
+<!ELEMENT topics (topic*)>
+<!ELEMENT topic (component-ref*, topic*)>
+<!ATTLIST topic name CDATA #REQUIRED>
+<!ELEMENT component-ref EMPTY>
+<!ATTLIST component-ref ref CDATA #REQUIRED>
+
+<!-- Breaking changes -->
+<!ELEMENT breaking.changes (entry*)>
+<!ELEMENT entry (#PCDATA)>
