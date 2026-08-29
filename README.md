@@ -50,6 +50,7 @@ A configuration contains these main sections:
 ```xml
 <config version="1">
     <versioning>...</versioning>
+    <archive hierarchy="major"/>
     <categories>...</categories>
     <components>...</components>
     <topics>...</topics>
@@ -370,6 +371,39 @@ Topics with content are rendered as sections. A topic named `default` is rendere
 ### 4. Archive tool
 
 The archive tool requires the configuration because it uses the configured formatter to determine the version and phase from the generated filename.
+
+Archive hierarchy is optional. With no archive rule, the existing flat version directories are used. Configure
+the hierarchy in the root configuration:
+
+```xml
+<config version="1">
+    <archive hierarchy="major"/>
+    ...
+</config>
+```
+
+For version `1.2.3`, `hierarchy="major"` archives files in `major/minor.patch` directories:
+
+```text
+changelogs/archive/
+    1/
+        2.3/
+            1.2.3_cumulated.xml
+            1.2.3_cumulated.md
+```
+
+Using `hierarchy="major-minor"` creates a separate patch directory:
+
+```text
+changelogs/archive/
+    1/
+        2/
+            3/
+                1.2.3_cumulated.xml
+                1.2.3_cumulated.md
+```
+
+When multiple phases are configured, the phase directory remains the outermost directory.
 
 Usage:
 

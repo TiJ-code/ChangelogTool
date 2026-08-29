@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<patch version="1">
+    <topic name="default">
+        <component ref="archive">
+            <category name="additions">
+                <entry>hierarchical archive directories grouped by major or major-minor version</entry>
+            </category>
+        </component>
+        <component ref="config-parser">
+            <category name="additions">
+                <entry>optional archive hierarchy configuration for version 1 config files</entry>
+            </category>
+        </component>
+    </topic>
+</patch>

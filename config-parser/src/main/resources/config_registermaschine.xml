@@ -12,6 +12,7 @@
             </phase>
         </phases>
     </versioning>
+    <archive hierarchy="major"/>
     <categories>
         <category name="additions">added</category>
         <category name="refactorings">refactored</category>

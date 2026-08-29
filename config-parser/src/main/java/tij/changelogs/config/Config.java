@@ -1,5 +1,6 @@
 package tij.changelogs.config;
 
+import tij.changelogs.config.model.ArchiveConfig;
 import tij.changelogs.config.model.ComponentConfig;
 import tij.changelogs.config.model.TopicConfig;
 import tij.changelogs.config.model.VersioningConfig;
@@ -12,5 +13,16 @@ public record Config(
         Map<String, String> categories,
         Map<String, ComponentConfig> components,
         List<TopicConfig> topics,
-        List<String> breakingLevels
-) {}
+        List<String> breakingLevels,
+        ArchiveConfig archiveConfig
+) {
+    public Config(
+            VersioningConfig versioningConfig,
+            Map<String, String> categories,
+            Map<String, ComponentConfig> components,
+            List<TopicConfig> topics,
+            List<String> breakingLevels
+    ) {
+        this(versioningConfig, categories, components, topics, breakingLevels, ArchiveConfig.DEFAULT);
+    }
+}
