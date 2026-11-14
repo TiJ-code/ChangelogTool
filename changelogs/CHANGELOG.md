@@ -1,7 +1,0 @@
-## Archive
-- added hierarchical archive directories grouped by major or major-minor version
-
-## Config Parser
-- added optional archive hierarchy configuration for version 1 config files
-
-
