@@ -18,6 +18,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -60,6 +61,8 @@ public final class ChangelogBuilder {
                             ConfigConstants.CUMULATED_DIR,
                             "cumulated.xml"
             );
+
+            Files.createDirectories(cumulatedFile.toPath().getParent());
 
             try (FileOutputStream out = new FileOutputStream(cumulatedFile)) {
                 transformer.transform(
