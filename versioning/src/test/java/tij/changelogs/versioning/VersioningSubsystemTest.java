@@ -35,6 +35,16 @@ class VersioningSubsystemTest {
     }
 
     @Test
+    void formatterRecognizesAndRendersPrefixedSnapshotWithoutConfiguredPhases() {
+        var formatter = new ConfiguredVersionFormatter(List.of());
+
+        Version parsed = formatter.parse("Alpha-1.2.3-SNAPSHOT");
+
+        assertEquals(new Version(1, 2, 3, "Alpha", true), parsed);
+        assertEquals("Alpha-1.2.3-SNAPSHOT", formatter.format(parsed));
+    }
+
+    @Test
     void regexSourceReplacesOnlyConfiguredCapture() throws Exception {
         Path file = Files.createTempFile("versioning", ".txt");
         Files.writeString(file, "version=1.2.3");
@@ -79,11 +89,11 @@ class VersioningSubsystemTest {
         var current = manager.resolveCurrentVersion();
         var changes = manager.plan(current, new IncrementMinorOperation());
 
-        assertEquals("version=1.3.0", changes.changes().getFirst().newContent());
+        assertEquals("version=1.3.0-SNAPSHOT", changes.changes().getFirst().newContent());
         assertEquals("version=1.2.3", Files.readString(first));
         manager.apply(changes);
-        assertEquals("version=1.3.0", Files.readString(first));
-        assertEquals("version=1.3.0", Files.readString(second));
+        assertEquals("version=1.3.0-SNAPSHOT", Files.readString(first));
+        assertEquals("version=1.3.0-SNAPSHOT", Files.readString(second));
     }
 
     private static VersioningPhase phase(String name, String formatter, String next) {

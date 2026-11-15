@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<patch version="1">
+    <topic name="default">
+        <component ref="markdown">
+            <category name="fixes">
+                <entry>resolve release versions from configured version sources instead of requiring a Maven POM</entry>
+            </category>
+        </component>
+        <component ref="versioning">
+            <category name="fixes">
+                <entry>support and preserve prefixed snapshot versions such as Alpha-1.2.3-SNAPSHOT</entry>
+            </category>
+        </component>
+    </topic>
+</patch>
