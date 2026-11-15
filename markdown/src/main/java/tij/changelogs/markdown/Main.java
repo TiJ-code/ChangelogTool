@@ -1,13 +1,16 @@
 package tij.changelogs.markdown;
 
-import org.w3c.dom.Node;
 import tij.changelogs.config.Config;
 import tij.changelogs.config.ConfigConstants;
 import tij.changelogs.config.ConfigSystem;
 import tij.changelogs.markdown.builder.MarkdownBuilder;
 import tij.changelogs.markdown.parser.ChangelogParser;
+import tij.changelogs.versioning.format.ConfiguredVersionFormatter;
+import tij.changelogs.versioning.resolver.VersionSourceResolver;
+import tij.changelogs.versioning.service.VersionManager;
+import tij.changelogs.versioning.source.IVersionSource;
+import tij.changelogs.versioning.source.RegexVersionSource;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,7 +46,7 @@ public class Main {
 
         File cumulatedFile = files.getFirst();
 
-        String version = getVersionFromPom();
+        String version = resolveVersion(config, new File("."));
 
         cumulatedFile = renameFileToReleaseVersion(cumulatedFile, version);
 
@@ -122,34 +125,17 @@ public class Main {
         return sibling.toAbsolutePath().toFile();
     }
 
-    private static String getVersionFromPom() {
-        try {
-            var factory = DocumentBuilderFactory.newInstance();
-            factory.setIgnoringComments(true);
-            factory.setValidating(false);
-            factory.setNamespaceAware(false);
-
-            var builder = factory.newDocumentBuilder();
-
-            File root = new File(".").getCanonicalFile();
-
-            var doc = builder.parse(new File(root, "pom.xml"));
-
-            var children = doc.getDocumentElement().getChildNodes();
-
-            for (int i = 0; i < children.getLength(); i++) {
-                var node = children.item(i);
-
-                if (node.getNodeType() != Node.ELEMENT_NODE)
-                    continue;
-
-                if (node.getNodeName().equals("version"))
-                    return node.getTextContent();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return null;
+    static String resolveVersion(Config config, File root) {
+        var formatter = new ConfiguredVersionFormatter(
+                config.versioningConfig().versionPhases()
+        );
+        List<IVersionSource> sources = config.versioningConfig().versionRules().stream()
+                .map(rule -> new RegexVersionSource(rule, formatter))
+                .map(source -> (IVersionSource) source)
+                .toList();
+        var manager = new VersionManager(
+                new VersionSourceResolver(root, sources)
+        );
+        return formatter.format(manager.resolveCurrentVersion().version());
     }
 }
