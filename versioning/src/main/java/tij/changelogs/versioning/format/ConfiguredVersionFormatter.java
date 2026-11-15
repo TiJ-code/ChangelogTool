@@ -6,6 +6,7 @@ import tij.changelogs.versioning.model.Version;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public final class ConfiguredVersionFormatter implements IVersionFormatter {
     private final Map<String, IVersionFormatter> formatters;
@@ -23,7 +24,7 @@ public final class ConfiguredVersionFormatter implements IVersionFormatter {
 
     @Override
     public String format(Version version) {
-        if (formatters.isEmpty()) return version.numericString();
+        if (formatters.isEmpty()) return formatGeneric(version);
         if (version.phase() == null) {
             if (formatters.size() != 1) throw new IllegalArgumentException("A phase is required when multiple phases are configured");
             return formatters.values().iterator().next().format(version);
@@ -45,14 +46,23 @@ public final class ConfiguredVersionFormatter implements IVersionFormatter {
     }
 
     private static Version parseGeneric(String value) {
-        var matcher = java.util.regex.Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)(?:-([A-Za-z0-9][A-Za-z0-9.-]*))?$").matcher(value);
+        var matcher = Pattern.compile(
+                "^(?:([A-Za-z0-9][A-Za-z0-9.-]*)-)?(\\d+)\\.(\\d+)\\.(\\d+)(?:-([A-Za-z0-9][A-Za-z0-9.-]*))?$"
+        ).matcher(value);
         if (!matcher.matches()) throw new IllegalArgumentException("Invalid numeric version: " + value);
-        String suffix = matcher.group(4);
+        String prefix = matcher.group(1);
+        String suffix = matcher.group(5);
         return new Version(
-                Integer.parseInt(matcher.group(1)),
                 Integer.parseInt(matcher.group(2)),
                 Integer.parseInt(matcher.group(3)),
-                "SNAPSHOT".equals(suffix) ? null : suffix,
+                Integer.parseInt(matcher.group(4)),
+                prefix == null ? ("SNAPSHOT".equals(suffix) ? null : suffix) : prefix,
                 "SNAPSHOT".equals(suffix));
+    }
+
+    private static String formatGeneric(Version version) {
+        String value = version.numericString();
+        if (version.phase() != null) value = version.phase() + "-" + value;
+        return version.snapshot() ? value + "-SNAPSHOT" : value;
     }
 }
